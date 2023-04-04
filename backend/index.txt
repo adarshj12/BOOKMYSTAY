@@ -1,0 +1,2 @@
+1.add role:client to client model
+2.add role:admin to admin model
