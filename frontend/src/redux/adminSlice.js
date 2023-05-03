@@ -10,10 +10,10 @@ const adminSlice = createSlice({
     initialState,
     reducers:{
         loginAdmin:(state,action)=>{
-            console.log(action);
+            // console.log(action);
             state.user = action.payload.user;
             state.token = action.payload.token;
-            console.log(state);
+            // console.log(state);
         },
         adminLogout:(state)=>{
             state.user=null;

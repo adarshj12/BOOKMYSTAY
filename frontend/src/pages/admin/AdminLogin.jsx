@@ -21,6 +21,7 @@ import { adminLogin } from '../../utils/API';
 import admImage from '../../assets/admin.jpg'
 import { useDispatch } from 'react-redux';
 import jwtDecode from 'jwt-decode';
+import toast, { Toaster } from "react-hot-toast";
 // import { login } from '../../redux/userSlice';
 import { loginAdmin } from '../../redux/adminSlice'; 
 const AdminLogin = () => {
@@ -51,12 +52,12 @@ const AdminLogin = () => {
                         user: decode.name,
                         token: res.data.token
                     }))
+                    toast.success(res.data.message);;
                     navigate('/admin/adminDashboard');
                 }
-                alert(res.data.message);
             }).catch((err) => {
                 console.log(err);
-                console.log(JSON.stringify(err));
+                toast.error(err.message);
             })
         } catch (error) {
             console.log(`error=> ${error.message}`);
@@ -119,7 +120,7 @@ const AdminLogin = () => {
                         </Stack>
                     </form>
                 </VStack>
-
+                <Toaster />
             </Flex>
         </Container>
   )

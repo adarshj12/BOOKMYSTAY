@@ -1,126 +1,154 @@
-import { Flex, Box, Image, Text, Button } from "@chakra-ui/react";
+import {
+  Flex,
+  Circle,
+  Box,
+  Image,
+  Badge,
+  useColorModeValue,
+  Icon,
+  HStack,
+  Text,
+  chakra,
+  Tooltip,
+} from '@chakra-ui/react';
+import { BsStar, BsStarFill, BsStarHalf } from 'react-icons/bs';
+import { FiShoppingCart } from 'react-icons/fi';
 
-const FeaturedProperties = () => {
+const data = {
+  isNew: true,
+  imageURL:
+    'https://images.unsplash.com/photo-1572635196237-14b3f281503f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=4600&q=80',
+  name: 'Wayfarer Classic',
+  price: 4.5,
+  rating: 4.2,
+  numReviews: 34,
+};
+
+function Rating({ rating, numReviews }) {
   return (
-    <Flex  justify="space-between" align="center" mt="20px" ml={8} mb={10}>
-      <Box flex="1" mr="20px">
-        <Image
-          src="https://cf.bstatic.com/xdata/images/hotel/square600/13125860.webp?k=e148feeb802ac3d28d1391dad9e4cf1e12d9231f897d0b53ca067bde8a9d3355&o=&s=1"
-          alt=""
-          h="250px"
-          w="100%"
-          objectFit="cover"
-        />
-        <Text fontWeight="bold" mt="10px">
-          Aparthotel Stare Miasto
-        </Text>
-        <Text fontWeight="300">Madrid</Text>
-        <Text fontWeight="500" mt="10px">
-          Starting from $120
-        </Text>
-        <Flex mt="10px">
-          <Button
-            bgColor="#003580"
-            color="white"
-            border="none"
-            mr="10px"
-            fontWeight="bold"
-            _hover={{ bgColor: "#002b5c" }}
-          >
-            8.9
-          </Button>
-          <Text fontSize="14px">Excellent</Text>
-        </Flex>
+    <Box d="flex" alignItems="center">
+      {Array(5)
+        .fill('')
+        .map((_, i) => {
+          const roundedRating = Math.round(rating * 2) / 2;
+          if (roundedRating - i >= 1) {
+            return (
+              <BsStarFill
+                key={i}
+                style={{ marginLeft: '1' }}
+                color={i < rating ? 'teal.500' : 'gray.300'}
+              />
+            );
+          }
+          if (roundedRating - i === 0.5) {
+            return <BsStarHalf key={i} style={{ marginLeft: '1' }} />;
+          }
+          return <BsStar key={i} style={{ marginLeft: '1' }} />;
+        })}
+      <Box as="span" ml="2" color="gray.600" fontSize="sm">
+        {numReviews} review{numReviews > 1 && 's'}
       </Box>
-      <Box flex="1" mr="20px">
-        <Image
-          src="https://cf.bstatic.com/xdata/images/hotel/max1280x900/215955381.jpg?k=ff739d1d9e0c8e233f78ee3ced82743ef0355e925df8db7135d83b55a00ca07a&o=&hp=1"
-          alt=""
-          h="250px"
-          w="100%"
-          objectFit="cover"
-        />
-        <Text fontWeight="bold" mt="10px">
-          Comfort Suites Airport
-        </Text>
-        <Text fontWeight="300">Austin</Text>
-        <Text fontWeight="500" mt="10px">
-          Starting from $140
-        </Text>
-        <Flex mt="10px">
-          <Button
-            bgColor="#003580"
-            color="white"
-            border="none"
-            mr="10px"
-            fontWeight="bold"
-            _hover={{ bgColor: "#002b5c" }}
-          >
-            9.3
-          </Button>
-          <Text fontSize="14px">Exceptional</Text>
-        </Flex>
-      </Box>
-       <Box flex="1" mr="20px">
-        <Image
-          src="https://cf.bstatic.com/xdata/images/hotel/max1280x900/232902339.jpg?k=3947def526b8af0429568b44f9716e79667d640842c48de5e66fd2a8b776accd&o=&hp=1"
-          alt=""
-          h="250px"
-          w="100%"
-          objectFit="cover"
-        />
-        <Text fontWeight="bold" mt="10px">
-          Comfort Suites Airport
-        </Text>
-        <Text fontWeight="300">Austin</Text>
-        <Text fontWeight="500" mt="10px">
-          Starting from $140
-        </Text>
-        <Flex mt="10px">
-          <Button
-            bgColor="#003580"
-            color="white"
-            border="none"
-            mr="10px"
-            fontWeight="bold"
-            _hover={{ bgColor: "#002b5c" }}
-          >
-            9.3
-          </Button>
-          <Text fontSize="14px">Exceptional</Text>
-        </Flex>
-      </Box>
-      <Box flex="1" mr="20px">
-        <Image
-          src="https://cf.bstatic.com/xdata/images/hotel/max1280x900/322658536.jpg?k=3fffe63a365fd0ccdc59210188e55188cdb7448b9ec1ddb71b0843172138ec07&o=&hp=1"
-          alt=""
-          h="250px"
-          w="100%"
-          objectFit="cover"
-        />
-        <Text fontWeight="bold" mt="10px">
-          Comfort Suites Airport
-        </Text>
-        <Text fontWeight="300">Austin</Text>
-        <Text fontWeight="500" mt="10px">
-          Starting from $140
-        </Text>
-        <Flex mt="10px">
-          <Button
-            bgColor="#003580"
-            color="white"
-            border="none"
-            mr="10px"
-            fontWeight="bold"
-            _hover={{ bgColor: "#002b5c" }}
-          >
-            9.3
-          </Button>
-          <Text fontSize="14px">Exceptional</Text>
-        </Flex>
-      </Box>
-      </Flex>
-  )
+    </Box>
+  );
 }
 
-export default FeaturedProperties;
+function ProductAddToCart() {
+  const products = [
+    { ...data, name: 'Product 1' },
+    { ...data, name: 'Product 2' },
+    { ...data, name: 'Product 3' },
+    { ...data, name: 'Product 4' },
+  ];
+
+  const color1 =useColorModeValue('white', 'gray.800')
+  const color2 =useColorModeValue('gray.800', 'white')
+
+  return (
+    <Flex p={50} w="full" alignItems="center" justifyContent="center">
+      {products.map((product) => (
+        <Box
+          key={product.name}
+          bg={color1}
+          maxW="sm"
+          borderWidth="1px"
+          rounded="lg"
+          shadow="lg"
+          position="relative"
+          mx={4}>
+          {product.isNew && (
+            <Circle
+              size="10px"
+              position="absolute"
+              top={2}
+              right={2}
+              bg="red.200"
+            />
+          )}
+
+          <Image
+            src={product.imageURL}
+            alt={`Picture of ${product.name}`}
+            roundedTop="lg"
+          />
+
+          <Box p="6">
+            <Box d="flex" alignItems="baseline">
+              {product.isNew && (
+                <Badge
+                  rounded="full"
+                  px="2"
+                  fontSize="0.8em"
+                  colorScheme="red">
+                  New
+                </Badge>
+              )}
+            </Box>
+            <Flex
+              mt="1"
+              justifyContent="space-between"
+              alignContent="center">
+              <Box
+                fontSize="2xl"
+                fontWeight="semibold"
+                as="h4"
+                lineHeight="tight"
+                isTruncated>
+                {product.name}
+              </Box>
+              <Tooltip
+                label="Add to cart"
+                bg="white"
+                placement={'top'}
+                color={'gray.800'}
+                fontSize={'1.2em'}>
+                <chakra.a href={'#'} display={'flex'}>
+                  <Icon
+                    as={FiShoppingCart}
+                    h={7}
+                    w={7}
+                    alignSelf={'center'}
+                  />
+                </chakra.a>
+              </Tooltip>
+            </Flex>
+
+            <Flex justifyContent="space-between" alignContent="center">
+            <Rating rating={product.rating} numReviews={product.numReviews} />
+
+              <Box
+                fontSize="2xl"
+                color={color2}>
+                <Box as="span" color={'gray.600'} fontSize="lg">
+                  £
+                </Box>
+                {product.price.toFixed(2)}
+              </Box>
+            </Flex>
+          </Box>
+        </Box>
+      ))}
+    </Flex>
+  );
+}
+
+export default ProductAddToCart;

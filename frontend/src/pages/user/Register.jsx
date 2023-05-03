@@ -19,18 +19,72 @@ import axios from '../../utils/axios';
 import { registerUser } from '../../utils/API';
 import { Link, useNavigate } from 'react-router-dom';
 import signup_img from '../../assets/reg.jpg'
-
+import toast, { Toaster } from "react-hot-toast";
 const Register = () => {
-    const [username, setName] = useState("")
+    const [username, setUsername] = useState("")
     const [email, setEmail] = useState("");
     const [mobile, setMobile] = useState("")
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+
+    const [nameError, setNameError] = useState(false);
+    const [emailError, setEmailError] = useState(false)
+    const [mobileError, setMobileError] = useState(false)
+    const [passwordError, setPasswordError] = useState(false)
+    const [cpasswordError, setCPasswordError] = useState(false)
     const navigate = useNavigate();
+
+    const handleNameChange = (value) => {
+        if (!value.match(/^[a-zA-Z]{3,16}$/)) {
+            setNameError(true)
+        } else {
+            setNameError(false)
+            setUsername(value);
+        }
+    }
+
+    const handleEmailChange = (value) => {
+        if (!value.match(/^[a-zA-Z0-9.!#$%&’+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)$/)) {
+            setEmailError(true)
+        } else {
+            setEmailError(false)
+            setEmail(value);
+        }
+    }
+
+    const handleMobileChange = (value) => {
+        if (!value.match(/^\d{10}$/)) {
+            setMobileError(true)
+        } else {
+            setMobileError(false)
+            setMobile(value);
+        }
+    }
+
+    const handlePasswordChange = (value) => {
+        if (!value.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/)) {
+            setPasswordError(true)
+        } else {
+            setPasswordError(false)
+            setPassword(value);
+        }
+    }
+
+    const handleCPasswordChange = (value) => {
+        if (value !== password) {
+            setCPasswordError(true)
+        } else {
+            setCPasswordError(false)
+            setConfirmPassword(value);
+        }
+    }
 
     const handleSubmit = async(event) => {
         event.preventDefault();
-        console.log(username, email,mobile, password, confirmPassword);
+        if (nameError || emailError || mobileError || passwordError || cpasswordError || username === '' || email === '' || password === '' || mobile === '' || confirmPassword === '') {
+            toast.error('form not completed')
+        }else{
+            console.log(username, email,mobile, password, confirmPassword);
         const body ={
             username, 
             email, 
@@ -38,19 +92,14 @@ const Register = () => {
             mobile
         }
         if(password!==confirmPassword) alert('password mismatch');
-        try {
             await axios.post(registerUser,body,{ headers: { "Content-Type": "application/json" } }).then((res)=>{
                 console.log(res);
-                console.log(JSON.stringify(res));
                 if(res.status===201) navigate('/login')
-                alert(res.data.message);
+                else if(res.status ===203) toast.error(res.data.message)
             }).catch((err)=>{
-                console.log(err);
-                console.log(JSON.stringify(err));
+                console.log(err.message);
+                toast.error(err.message)
             }) 
-        } catch (error) {
-            console.log(`error=> ${error.message}`);
-            alert(error.message);
         }
     };
 
@@ -89,53 +138,47 @@ const Register = () => {
                                 <FormLabel>Full Name</FormLabel>
                                 <Input
                                     type="text"
-                                    value={username}
-                                    onChange={(e) => setName(e.target.value)}
-                                    required
+                                    onChange={(e) => handleNameChange(e.target.value)}
                                 />
+                                {nameError && <Text color={'red'}>Name should not be less than 3 characters and should only include alphabets</Text>}
                             </FormControl>
                             <FormControl id="email">
                                 <FormLabel>Email address</FormLabel>
                                 <Input
                                     type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
+                                    onChange={(e) => handleEmailChange(e.target.value)}
                                 />
+                                {emailError && <Text color={'red'}>Invalid Email Format</Text>}
                             </FormControl>
-                            <FormControl id="email">
+                            <FormControl id="mobile">
                                 <FormLabel>Mobile Number</FormLabel>
                                 <Input
                                     type="text"
-                                    value={mobile}
-                                    onChange={(e) => setMobile(e.target.value)}
-                                    required
+                                    onChange={(e) => handleMobileChange(e.target.value)}
                                 />
+                                {mobileError && <Text color={'red'}>Enter a valid Mobile Number excluding +91</Text>}
                             </FormControl>
                             <FormControl id="password">
                                 <FormLabel>Password</FormLabel>
                                 <Input
                                     type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
+                                    onChange={(e) => handlePasswordChange(e.target.value)}
                                 />
+                                {passwordError && <Text color={'red'}>Password should contain 8 to 15 characters with at least one lowercase letter, one uppercase letter, one numeric digit, and one special character</Text>}
                             </FormControl>
                             <FormControl id="confirmPassword">
                                 <FormLabel>Confirm Password</FormLabel>
                                 <Input
                                     type="password"
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    required
+                                    onChange={(e) => handleCPasswordChange(e.target.value)}
                                 />
                             </FormControl>
-
+                            {cpasswordError && <Text color={'red'}>Password and Confirm Password does not Match</Text>}
                             <Button width="full" color="green.400" type='submit'
                                 size="lg">REGISTER</Button>
                             <Text fontSize="sm">
                                 Already have an account?{" "}
-                                <Box as="span"  color="blue.500">
+                                <Box as="span" color="blue.500">
                                     <Link to='/login'> Log in here</Link>
 
                                 </Box>
@@ -143,7 +186,7 @@ const Register = () => {
                         </Stack>
                     </form>
                 </VStack>
-
+                <Toaster />
             </Flex>
         </Container>
     );

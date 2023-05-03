@@ -6,6 +6,8 @@ import Header from '../../../components/user/Home/Header'
 import TopDestinations from '../../../components/user/Home/TopDestinations'
 import Explore from '../../../components/user/Home/Explore'
 import FeaturedProperties from '../../../components/user/Home/FeaturedItems'
+import Testimony from '../../../components/user/Home/Reviews'
+
 const Home = () => {
     return (
         <>
@@ -15,7 +17,8 @@ const Home = () => {
                     <Header/>
                     <TopDestinations/>
                     <Explore/>
-                    <FeaturedProperties/>
+                    {/* <FeaturedProperties/> */}
+                    <Testimony/>
                 </Box>
                 <Box as="footer" mt="auto">
                     <Footer />

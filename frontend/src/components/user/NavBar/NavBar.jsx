@@ -22,9 +22,10 @@ import {
 } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
-import logo from '../../../assets/booknstay.jpg'
+import logo from '../../../assets/booknstay.JPG'
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../../redux/userSlice';
+import jwtDecode from "jwt-decode";
 // const Links = ['Dashboard', 'Projects', 'Team'];
 
 // const NavLink = () => (
@@ -45,12 +46,16 @@ const NavBar = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     let user=null;
     user = useSelector(state => state.user.user);
-    console.log(user);
+    // console.log(user);
     const dispatch = useDispatch();
     const logoutUser =()=>{
         localStorage.removeItem('userToken');
         dispatch(logout());
         navigate('/')
+    }
+    const profile=()=>{
+        const decode = jwtDecode(localStorage.getItem('userToken'));
+        navigate('/profile',{state:{data:decode.id}})
     }
     return (
         <>
@@ -65,7 +70,7 @@ const NavBar = () => {
                     />
                     <HStack spacing={8} alignItems={'center'}>
                         <Box color={'whiteAlpha.900'}>
-                            <Image h={10} src={logo}></Image>
+                            <Image h={10} src={logo} _hover={{ cursor: 'pointer' }} onClick={()=>navigate('/')}></Image>
                         </Box>
                         <HStack
                             as={'nav'}
@@ -96,14 +101,14 @@ const NavBar = () => {
                                         />
                                     </MenuButton>
                                     <MenuList>
-                                        <MenuItem>Profile</MenuItem>
+                                        <MenuItem onClick={profile}>Profile</MenuItem>
                                         <MenuDivider />
                                         <MenuItem onClick={logoutUser}>Logout</MenuItem>
                                     </MenuList>
                                 </Menu> :
                                 <HStack>
-                                    <Button onClick={() => navigate('/login')}>LOGIN</Button>
-                                    <Button onClick={() => navigate('/register')}>REGISTER</Button>
+                                    <Button rounded={'none'} onClick={() => navigate('/login')}>LOGIN</Button>
+                                    <Button rounded={'none'} onClick={() => navigate('/register')}>REGISTER</Button>
                                 </HStack>
                         }
                     </Flex>

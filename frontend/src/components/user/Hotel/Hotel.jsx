@@ -1,53 +1,276 @@
-import { Box, Button, HStack, Heading, Spacer, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Image } from '@chakra-ui/react';
-import React, { useState } from 'react'
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-
+import {
+    Box,
+    Button,
+    HStack,
+    Heading,
+    Spacer,
+    Text,
+    Center,
+    Flex,
+    VStack,
+    Divider,
+    Stack,
+    Image
+} from '@chakra-ui/react';
+import React, { useState, useEffect } from 'react'
+import { FaMapMarkerAlt, FaParking } from 'react-icons/fa';
+import { SiGooglestreetview } from 'react-icons/si';
+import { GiCoffeeCup } from 'react-icons/gi';
+import { TbAirConditioning, TbFridge } from 'react-icons/tb';
+import { MdSignalWifi3Bar } from 'react-icons/md';
+import RoomSelection from './RoomSelectionModal';
+import Map from './LocationMap';
+import SliderComponent from './ImageSlider'
+import { useLocation, useNavigate } from 'react-router-dom';
+import axios from '../../../utils/axios'
+import { gethotel } from '../../../utils/API'
+import { GET_HOTEL_ROOMS } from '../../../utils/API'
+import Swal from 'sweetalert2';
+import { useSelector } from 'react-redux';
 const Hotel = () => {
-    const [activeIndex, setActiveIndex] = useState(0);
-    const images = [
-        { src: "data:image/jpeg;base64,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", alt: "Image 1" },
-        { src: "data:image/jpeg;base64,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", alt: "Image 2" },
-        { src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT--En6alF2W7TWSewoLM076Y6M8gHOpa7pjQ&usqp=CAU", alt: "Image 3" },
+    const location = useLocation();
+    const navigate = useNavigate()
+    const search = useSelector(state => state.search)
+    const user = useSelector(state => state.user.user)
+    // console.log(search);
+    // console.log(search.dates[0].startDate);
+    let startDate = search.dates[0].startDate;
+    let endDate = search.dates[0].endDate
+    const adults = search.options.adult
+    // console.log(location.state.data);
+    const [hotel, setHotel] = useState('')
+    const [rate, setRate] = useState(0)
+    const [rooms, setRooms] = useState([])
+    const [titleCount, setTitleCount] = useState({})
+    const getDetails = async () => {
+        await axios.get(`${gethotel}/${location.state.data}`, { headers: { 'Content-Type': 'application/json' } }).then((res) => {
+            if (res.status === 200) {
+                setHotel(res.data)
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Data not found'
+                })
+            }
+        }).catch((err) => {
+            console.log(err)
+        })
+
+    }
+    const getRooms = async (req, res) => {
+        //tokn send
+        await axios.get(`${GET_HOTEL_ROOMS}/${location.state.data}/${startDate}/${endDate}`, { headers: { 'Content-Type': 'application/json' } }).then((res) => {
+            if (res.status === 200) {
+                // console.log(res.data);
+                const uniqueArr = res.data.filter((obj, index, self) => {
+                    return index === self.findIndex((t) => (
+                        t.title === obj.title
+                    ));
+                });
+                setRooms(uniqueArr)
+
+                let newTitleCount = {};
+
+                for (let i = 0; i < res.data.length; i++) {
+                    let title = res.data[i].title;
+                    newTitleCount[title] = (newTitleCount[title] || 0) + 1;
+                }
+
+                setTitleCount(newTitleCount);
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Data not found'
+                })
+            }
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
+
+    useEffect(() => {
+        getDetails();
+        getRooms();
+    }, [])
+    // console.log('rooms array',rooms)
+    //console.log('frequency counter',titleCount)
+
+    const slides = [
+        { url: "", title: "hotel" },
+        { url: "", title: "hotel" },
+        { url: "", title: "hotel" },
+        { url: "", title: "hotel" },
+        { url: "", title: "hotel" },
     ];
+    for (let i = 0; i < hotel?.photos?.length; i++) {
+        slides[i].url = hotel?.photos[i]?.image_url;
+    }
+    const roomslides = rooms.map((item) => {
+        const photos = item?.photos || [];
+        return {
+            slides: photos?.map((photo) => ({
+                url: photo?.image_url || "",
+                title: item?.title || "room",
+            })),
+        };
+    });
 
-    const handlePrevious = () =>
-        setActiveIndex((prevIndex) =>
-            prevIndex === 0 ? images.length - 1 : prevIndex - 1
-        );
+    const containerStyles = {
+        width: "1300px",
+        height: "500px",
+        margin: "0 auto",
+    };
+    const roomStyles = {
+        width: "300px",
+        height: "250px",
+        margin: "0 auto",
+    };
 
-    const handleNext = () =>
-        setActiveIndex((prevIndex) =>
-            prevIndex === images.length - 1 ? 0 : prevIndex + 1
-        );
+    const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
+    const countDays = (date1, date2) => {
+        const timeDiff = Math.abs(date2.getTime() - date1.getTime());
+        const diffDays = Math.ceil(timeDiff / MILLISECONDS_PER_DAY);
+        return diffDays;
+    }
+    // console.log(countDays(search.dates[0].startDate, search.dates[0].endDate));
+    // console.log(typeof(countDays(search.dates[0].startDate, search.dates[0].endDate)));
+    const numberOfDays = countDays(search.dates[0].startDate, search.dates[0].endDate);
+    // console.log(search.dates[0].startDate, search.dates[0].endDate);
 
+    const getDatesRange = (start, end) => {
+        const date = new Date(start.getTime())
+
+        let list = [];
+        while (date <= end) {
+            list.push(new Date(date))
+            //list.push(new Date(date).getTime())
+            date.setDate(date.getDate() + 1)
+        }
+        return list;
+    }
+    // console.log(getDatesRange(search.dates[0].startDate, search.dates[0].endDate));
+    const dateRange = getDatesRange(search.dates[0].startDate, search.dates[0].endDate)
+
+    const iSAvailable = (roomId) => {
+        let result = rooms.filter(elem => elem._id === roomId);
+        const isFound = result[0].unavailableDates.includes(new Date(search.dates[0].startDate).getTime()) || result[0].unavailableDates.includes(new Date(search.dates[0].endDate).getTime())
+        console.log(isFound);
+        return !isFound;
+    }
 
     return (
         <>
             <Box p={10}>
                 <HStack>
-                    <Heading flex="1">Selected Hotel Name</Heading>
+                    <Heading flex="1">{hotel?.name}</Heading>
                     <Spacer />
-                    <Button>Book Now</Button>
+                    <Button bgColor="#003580" color="white" fontWeight="bold" borderRadius={0} _hover={{ bgColor: "none" }} >8.9</Button>
                 </HStack>
-                <Box position="relative">
-                    <Box
-                        display="flex"
-                        transition="transform 0.3s ease-in-out"
-                        transform={`translateX(-${activeIndex * 100}%)`}
-                    >
-                        {images.map((image, index) => (
-                            <Box key={index} flexShrink={0} width="full">
-                                <Image src={image.src} alt={image.alt} width="full" />
-                            </Box>
-                        ))}
-                    </Box>
-                    <Box position="absolute" top="50%" left={2} cursor="pointer" onClick={handlePrevious}>
-                        <FaChevronLeft size={24} />
-                    </Box>
-                    <Box position="absolute" top="50%" right={2} cursor="pointer" onClick={handleNext}>
-                        <FaChevronRight size={24} />
-                    </Box>
+                <HStack mb={10}>
+                    <FaMapMarkerAlt />
+                    <Text>Bharath Cancer Hospital Mysore  </Text>
+                    <SiGooglestreetview style={{ color: "#286c16" }} />
+                    <Map />
+                </HStack>
+                <Box style={containerStyles}>
+                    <SliderComponent slides={slides} />
                 </Box>
+                <Flex>
+                    <Text mt={50} fontSize={20} fontWeight={600}>Amenities</Text>
+                    <Spacer />
+
+                </Flex>
+                <HStack>
+                    <HStack><GiCoffeeCup /><Text>Restaurant</Text> </HStack>
+                    <Center height='40px'  >
+                        <Divider orientation='vertical' />
+                    </Center>
+                    <HStack><TbAirConditioning /><Text>Air Conditioning</Text> </HStack>
+                    <Center height='40px'  >
+                        <Divider orientation='vertical' />
+                    </Center>
+                    <HStack><MdSignalWifi3Bar /><Text>Wi-Fi</Text> </HStack>
+                    <Center height='40px'  >
+                        <Divider orientation='vertical' />
+                    </Center>
+                    <HStack><TbFridge /><Text>Refrigerator</Text> </HStack>
+                    <Center height='40px'  >
+                        <Divider orientation='vertical' />
+                    </Center>
+                    <HStack><FaParking /><Text>Parking</Text> </HStack>
+                </HStack>
+                <Text mt={50} fontSize={20} fontWeight={600}>About The Hotel</Text>
+                <Text mt={25}>{hotel?.desc}
+                </Text>
+                <Text mt={50} fontSize={20} fontWeight={600}>Address</Text>
+                <Text mt={25}>{hotel?.address}</Text>
+                <Flex>
+                    <Text mt={50} fontSize={20} fontWeight={600}>Room Types</Text>
+                    <Spacer />
+
+                </Flex>
+
+
+                {
+                    rooms && rooms.map((item, i) => {
+                        return (
+                            <>
+                                <HStack p={10} minH={'300px'} key={i}>
+                                    <Box width="30%"  >
+                                        <Box style={roomStyles} >
+                                            <SliderComponent slides={roomslides[i]?.slides} />
+                                        </Box>
+                                    </Box>
+                                    <Center height='300px'  >
+                                        <Divider orientation='vertical' />
+                                    </Center>
+                                    <Box width="30%" textAlign="center" display="flex" alignItems="center" justifyContent="center" >
+                                        <VStack>
+                                            <Text fontWeight={'bold'}>{item.title} </Text>
+                                            <Text fontWeight={600}>{item.desc} </Text>
+                                            <Text>Room for {item.people} </Text>
+                                        </VStack>
+                                    </Box>
+                                    <Center height='300px'  >
+                                        <Divider orientation='vertical' />
+                                    </Center>
+                                    <Box width="30%" textAlign="center" alignItems="center" justifyContent="center">
+                                        <Text mt={10}> Rate for {adults} Adult(s) for {numberOfDays} Night Stay </Text>
+                                        <Text mt={10} fontWeight={'bold'}>₹ {item.people * numberOfDays * item.rate}  </Text>
+                                        {
+                                            user ?
+                                                <RoomSelection
+                                                    hotelid={location.state.data}
+                                                    roomid={item._id}
+                                                    dateRange={dateRange}
+                                                    address={hotel.address}
+                                                    hotel={hotel.name}
+                                                    room={item.title}
+                                                    rate={item.people * numberOfDays * item.rate}
+                                                    days={numberOfDays}
+                                                    number={search.options.room}
+                                                    maxCount={titleCount}
+                                                    photo={hotel?.photos[0]?.image_url}
+                                                />
+                                                :
+                                                <Button
+                                                    mt={10}
+                                                    colorScheme="red"
+                                                    bgGradient="linear(to-r, red.400, red.500, red.600)"
+                                                    color="white"
+                                                    variant="solid"
+                                                    onClick={() => navigate('/login')}
+                                                >
+                                                    Login to Reserve
+                                                </Button>
+                                        }
+                                    </Box>
+                                </HStack>
+                            </>
+                        )
+                    })
+                }
+
             </Box>
 
 

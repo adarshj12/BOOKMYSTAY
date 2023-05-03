@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     Box,
     Button,
@@ -18,8 +18,11 @@ import { DateRange } from "react-date-range";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { format } from "date-fns";
+import { useSelector } from "react-redux";
 
-const SearchBox = ({ destination, options }) => {
+const SearchBox = () => {
+    let destination=useSelector(state=>state.search.city);
+    let dates = useSelector(state=>state.search.dates);
     const { isOpen, onToggle } = useDisclosure();
     const [date, setDate] = React.useState([
         {
@@ -34,7 +37,7 @@ const SearchBox = ({ destination, options }) => {
             <Box w="100%" maxW="1024px" display="flex" gap="20px">
                 <Box
                     flex="1"
-                    bgColor="#febb02"
+                    bgColor="#1496fd"
                     p="10px"
                     borderRadius="10px"
                     position="sticky"
@@ -48,7 +51,7 @@ const SearchBox = ({ destination, options }) => {
                         <Text fontSize="12px" mb="5px">
                             Destination
                         </Text>
-                        <Input placeholder={destination} />
+                        <Input placeholder={destination} bg={'white'} />
                     </Box>
                     <Box mb="10px">
                         <Text fontSize="12px" mb="5px">

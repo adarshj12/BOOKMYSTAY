@@ -1,57 +1,112 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Heading, Table, Thead, Tbody, Tr, Th, Td } from '@chakra-ui/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Box, Flex, Heading, Table,Text, Thead, Tbody, Tr, Th, Td,Spacer,Center, VStack ,HStack} from '@chakra-ui/react';
+import { FaRupeeSign,FaUsers } from 'react-icons/fa'; 
+import { TbBuildingBank} from 'react-icons/tb'; 
+import Piechart from './Piechart'
+import LineGraph from './LineGraph';
+import { DASHBOARD } from '../../../utils/API';
 import axios from '../../../utils/axios'
-import { getAllUsers } from '../../../utils/API'
-
+import { Toaster, toast } from 'react-hot-toast';
 
 const Main = () => {
-  const [userList, setData] = useState([]);
-  const users = async () => {
-    try {
-      await axios.get(getAllUsers, { headers: { "Content-Type": "application/json" } }).then((res) => {
-        console.log(res);
-        setData(res.data.users);
 
-      }).catch((err) => {
-        console.log(`error=> ${err.message}`)
-      })
-    } catch (err) {
-      console.log(`erroe => ${err.message}`)
-    }
+  const [payment,setPayment] = useState([]);
+  const [revenue,setRevenue] = useState([]);
+  const [users,setusers] = useState(0)
+  const [properties,setproperties] = useState(0)
+  const [total,settotal] = useState(0)
+  const token = localStorage.getItem('adminToken');
+  const dashboardData =async()=>{
+    await axios.get(DASHBOARD, { headers: { 'Authorization': `Bearer ${token}` } }).then(res=>{
+      setPayment(res.data.payment);
+      setRevenue(res.data.revenue);
+      setusers(res.data.users)
+      setproperties(res.data.properties)
+      settotal(res.data.total[0].totalRate)
+    }).catch(err=>{
+      toast.error(err.message)
+    })
   }
-  useEffect(() => {
-    users();
-    console.log(userList)
-  }, [])
+
+  useEffect(()=>{
+    dashboardData()
+  },[])
   return (
     <>
-      <FontAwesomeIcon icon="fa-solid fa-heart" beat size="xs" style={{ color: "#ff0000", }} />
-      <Box flex="1" p="4">
-        <Heading size="lg" mb="4">Users</Heading>
+      <>
+        <Box p={4}>
+          <Flex>
+            <Box ml={4} flex={1}>
+              <Box bg="white" p={4} rounded="lg" shadow="md" mb={4}>
+               
+                <Flex>
+                  <Box w='250px' h={100} boxShadow="md">
+                    <Center>
+                      <VStack>
+                    <Text fontWeight={'extrabold'}>Total Users</Text>
+                    <HStack>
+                      <FaUsers fontSize={40}/>
+                      <Heading fontStyle={'italic'}>{users}</Heading>
+                      </HStack> 
+                      </VStack>
+                   
+                    </Center>
+                  </Box>
+                  <Spacer />
+                  <Box w='250px' h={100} boxShadow="md">
+                  <Center>
+                      <VStack>
+                    <Text fontWeight={'extrabold'}>Total Properties</Text>
+                    <HStack>
+                      <TbBuildingBank fontSize={40}/>
+                      <Heading fontStyle={'italic'}>{properties}</Heading>
+                      </HStack> 
+                      </VStack>
+                   
+                    </Center>
+                  </Box>
+                  <Spacer />
+                  <Box w='250px' h={100} boxShadow="md">
+                  <Center>
+                      <VStack>
+                    <Text fontWeight={'extrabold'}>Total Revenue</Text>
+                     <HStack>
+                      <FaRupeeSign fontSize={40}/>
+                      <Heading fontStyle={'italic'}>{total*0.2}</Heading>
+                      </HStack> 
+                      </VStack>
+                   
+                    </Center>          
+                  </Box>
 
+                </Flex>
 
-        <Table variant="simple">
-          <Thead>
-            <Tr>
-              <Th>Username</Th>
-              <Th>Email</Th>
-              <Th>Mobile</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {userList?.map((item, index) => {
-              return (
-                <Tr key={index}>
-                  <Td>{item.username}</Td>
-                  <Td>{item.email}</Td>
-                  <Td>{item.mobile}</Td>
-                </Tr>
-              )
-            })}
-          </Tbody>
-        </Table>
-      </Box>
+                <Flex mt={50}>
+                  <Box w='500px' h={250} boxShadow="md">
+                    <Center>
+                      <VStack>
+
+                    <Text fontWeight={'extrabold'}>Payment Mode</Text>
+                     <Piechart payment={payment}/>
+                      </VStack>
+                   
+                    </Center>
+                  </Box>
+                  <Spacer />
+                  <Box w='500px' h={250} boxShadow="md">
+                  <Center>
+                     <LineGraph revenue={revenue}/>
+                   
+                    </Center>
+                  </Box>
+
+                </Flex>
+              </Box>
+            </Box>
+          </Flex>
+          <Toaster/>
+        </Box>
+      </>
     </>
   )
 }

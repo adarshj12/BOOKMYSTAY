@@ -15,7 +15,7 @@ const UserSchema = new mongoose.Schema({
     },
     mobile:{
         type:String,
-        required:true
+        //required:true
     },
     isBlocked:{
         type:Boolean,

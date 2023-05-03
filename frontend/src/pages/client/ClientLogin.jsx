@@ -23,6 +23,8 @@ import jwtDecode from 'jwt-decode';
 import { useDispatch } from 'react-redux';
 // import { login } from '../../redux/userSlice';
 import { client_login } from '../../redux/clientSlice';
+import Swal from 'sweetalert2';
+import toast, { Toaster } from "react-hot-toast";
 const ClientLogin = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -37,29 +39,34 @@ const ClientLogin = () => {
             email,
             password
         }
-        try {
-            await axios.post(loginClient, body, { headers: { "Content-Type": "application/json" } }).then((res) => {
-                console.log(res);
+            axios.post(loginClient, body, { headers: { "Content-Type": "application/json" } }).then((res) => {
+                // console.log(res);
+                // console.log(res.data);
                 // console.log(JSON.stringify(res));
-                if (res.status === 202) {
-                    console.log('rtdyytftfutu');
-                    localStorage.setItem('clientToken', res.data.token);
-                    const decode = jwtDecode(res.data.token);
-                    dispatch(client_login({
-                        user: decode.name,
-                        token: res.data.token
-                    }))
-                    navigate('/client');
+                if(res.data.blocked){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'You are Blocked'
+                      })
+                }else{
+                    if (res.status === 202) {
+                        localStorage.setItem('clientToken', res.data.token);
+                        const decode = jwtDecode(res.data.token);
+                        dispatch(client_login({
+                            user: decode.name,
+                            token: res.data.token
+                        }))
+                        navigate('/client');
+                    }else if(res.status === 403){
+                        toast.error(res.data.message);
+                    }else if(res.status === 404){
+                        toast.error(res.data.message);
+                    }
                 }
-                alert(res.data.message);
             }).catch((err) => {
                 console.log(err);
-                console.log(JSON.stringify(err));
+                toast.error(err.message);
             })
-        } catch (error) {
-            console.log(`error=> ${error.message}`);
-            alert(error.message);
-        }
     };
 
     return (
@@ -125,7 +132,7 @@ const ClientLogin = () => {
                         </Stack>
                     </form>
                 </VStack>
-
+                <Toaster />              
             </Flex>
         </Container>
 

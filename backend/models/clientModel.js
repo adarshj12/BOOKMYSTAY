@@ -17,6 +17,10 @@ const ClientSchema = new mongoose.Schema({
         type:Number,
         required:true
     },
+    earnings:{
+        type:Number,
+        default:0
+    },
     verified:{
         type:Boolean,
         default:false

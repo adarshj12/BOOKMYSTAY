@@ -7,17 +7,59 @@ export const baseUrl = "http://localhost:4000/api/v1";
 export const registerUser='/users/register'
 export const loginUser='/users/login'
 export const otpLogin ='/users/otp'
+export const GOOGLE_AUTH ='/users/googleAuth'
+export const UPDATE_MOBILE='/users/mobileupdate'
+export const getList ='/hotels/getAll'
 
-
+export const DESTINATIONS='/hotels/places'
+export const COUNT_BY_CITY='/hotels/getbyCity'
+export const COUNT_BY_TYPE='/hotels/getbyType'
+export const GET_DETAIL_USER ='/users/getuser'
+export const BOOK = '/users/booking'
+export const STRIPE_BOOK = '/users/stripe_booking'
+export const GET_BOOKING = 'hotels/booking'
+export const GET_MY_BOOKINGS='/users/bookings'
+export const GET_MY_BOOKING='/users/booking'
 //CLIENT SIDE URLS==>
 
 export const registerClient = '/client/register'
 export const loginClient = '/client/login'
 
+export const status = '/client/checkStatus'
+export const getAllProperties ='/client/getProperties'
+export const addHotel = '/client/createHotel'
+export const deltehotel ='/client/deleteproperty'
+export const ADD_ROOM ='/rooms/addroom'
 
 
-
+export const gethotel ='/hotels/getProperty'
+export const UPDATE_HOTEL='/client/update'
+export const GET_HOTEL_ROOMS='/hotels/rooms'
+export const GET_MY_HOTEL_BOOKINGS='/client/getBookings'   
+export const GET_ALL_MY_BOOKINGS='/client/getmybookings'
+export const GET_USER_BOOKING='/client/getUserBookingDetail'
+export const GET_EARNINGS ='/client/earnings'
+export const CHANGE_STATUS ='/client/bookingstatus' 
 //ADMIN SIDE URLS==>
 
 export const adminLogin='/admin/login'
+export const verifyAdmin = '/admin/verify'
 export const getAllUsers ='/admin/getUsers'
+export const getAllClients ='/admin/getClients'
+
+export const blockClient ='/admin/blockClient'
+export const verifyClient ='/admin/verifyClient'
+
+export const blockUser ='/admin/blockUser'
+export const GET_ALL_PROPERTIES='/admin/getProperties'
+export const GET_USER ='/admin/getUser'
+export const DELETE_USER='/admin/deleteuser'
+
+export const UPDATE_USER='/admin/updateuser'
+export const DELETE_CLIENT='/admin/deleteclient'
+
+export const GET_ALL_BOOKINGS='/admin/getAllBookings'
+export const SHOW_PAYMENT_STATUS='/admin/payments'
+export const PAY_CLIENT='/admin/payclient'
+export const DASHBOARD ='/admin/dashboard'
+export const ADMIN_GET_BOOKINGS='/admin/getBookings'

@@ -1,40 +1,66 @@
 const jwt = require('jsonwebtoken');
-const createError = require('./error');
-require('dotenv').config();
+require('dotenv').config()
 
-const verifyToken=(req,res,next)=>{
-    const token =req.cookies.access_token;
-    console.log(token);
-    if(!token) return next(createError(401,"Unauthorized access"));
-    jwt.verify(token,process.env.SECRET,(err,user)=>{
-        if(err)  return next(createError(403,"Invalid Token"));
-        req.user=user;
-        next();
-    })
+const verifyUser =async(req,res,next)=>{
+    try {
+        // console.log('called');
+        const token = req.headers['authorization'].split(' ')[1];
+        // console.log(token);
+        const decoded=await jwt.verify(token, process.env.SECRET);
+        // console.log(decoded);
+        if(decoded.user){
+            next();
+        }    
+        else {
+            return res.status(403).json({ message: `Unauthorized` });
+        } 
+    } catch (error) {
+        console.log(`error=> ${error.message}`);
+        return res.status(201).json({ message: `Authorization failed  ${error.message}` })
+    }
 }
 
-const verifyUser =(req,res,next)=>{
-    verifyToken(req,res,next,()=>{
-        if(req.user.id===req.params.id||req.user.isAdmin){
-            next()
-        }else{
-            return next(createError(403,"Unauthorized access"));
-        }
-    })
+const verifyClient =async(req,res,next)=>{
+    try {
+        // console.log('called');
+        const token = req.headers['authorization'].split(' ')[1];
+        // console.log(token);
+        const decoded=await jwt.verify(token, process.env.SECRET);
+        // console.log(decoded);
+        if(decoded.client||decoded.admin){
+            next();
+        }    
+        else {
+            return res.status(403).json({ message: `Unauthorized` });
+        } 
+    } catch (error) {
+        console.log(`error=> ${error.message}`);
+        return res.status(201).json({ message: `Authorization failed  ${error.message}` })
+    }
 }
 
-const verifyAdmin =(req,res,next)=>{
-    verifyToken(req,res,next,()=>{
-        if(req.user.isAdmin){
-            next()
-        }else{
-            return next(createError(403,"Unauthorized access"));
-        }
-    })
+const verifyAdmin =async(req,res,next)=>{
+    try {
+        // console.log('called');
+        const token = req.headers['authorization'].split(' ')[1];
+        // console.log(token);
+        const decoded=await jwt.verify(token, process.env.SECRET);
+        // console.log(decoded);
+        if(decoded.admin){
+            next();
+        }    
+        else {
+            return res.status(403).json({ message: `Unauthorized` });
+        } 
+    } catch (error) {
+        console.log(`error=> ${error.message}`);
+        return res.status(201).json({ message: `Authorization failed  ${error.message}` })
+    }
 }
+
 
 module.exports={
-    verifyToken,
     verifyUser,
+    verifyClient,
     verifyAdmin
 }

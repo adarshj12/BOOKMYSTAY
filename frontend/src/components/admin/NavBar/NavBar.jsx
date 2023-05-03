@@ -23,7 +23,7 @@ const NavBar = () => {
     }
 
     return (
-        <Flex backgroundColor="blue.500" height="60px" alignItems="center" paddingX="50px">
+        <Flex backgroundColor="rgb(0 130 237 / 60%)" height="60px" alignItems="center" paddingX="50px">
             <Box width="200px">
                 <Text fontSize="xl" fontWeight="bold" color="white">Book My Stay </Text>
             </Box>

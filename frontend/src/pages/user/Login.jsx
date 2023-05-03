@@ -12,20 +12,23 @@ import {
     Input,
     Stack,
     Text,
-    VStack
+    VStack,
+    useDisclosure
 } from '@chakra-ui/react';
 import axios from '../../utils/axios';
 import { Link, useNavigate } from 'react-router-dom';
 import authimg from '../../assets/auth.jpg'
-import { loginUser } from '../../utils/API';
+import { GOOGLE_AUTH, loginUser } from '../../utils/API';
 import { useDispatch } from 'react-redux';
 import { login } from '../../redux/userSlice';
 import jwtDecode from 'jwt-decode';
 import { FaGoogle } from 'react-icons/fa';
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { authentication } from '../../firebase/firebase';
+import GAuthModal from '../../components/user/Profile/GAuthModal'
 // import { signInWithGoogle } from '../../firebase/firebaseGoogleAuth';
-
+import Swal from 'sweetalert2';
+import toast, { Toaster } from "react-hot-toast";
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -42,16 +45,23 @@ const Login = () => {
             await axios.post(loginUser, body, { headers: { "Content-Type": "application/json" } }).then((res) => {
                 console.log(res);
                 console.log(JSON.stringify(res));
-                if (res.status === 202) {
-                    localStorage.setItem('userToken', res.data.token);
-                    const decode = jwtDecode(res.data.token);
-                    dispatch(login({
-                        user: decode.name,
-                        token: res.data.token
-                    }))
-                    navigate('/');
+                if (res.data.blocked) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "You are blocked"
+                    })
+                } else {
+                    if (res.status === 202) {
+                        localStorage.setItem('userToken', res.data.token);
+                        const decode = jwtDecode(res.data.token);
+                        dispatch(login({
+                            user: decode.name,
+                            mobile:decode.mobile,
+                            token: res.data.token
+                        }))
+                        navigate('/');
+                    }
                 }
-                alert(res.data.message);
             }).catch((err) => {
                 console.log(err);
                 console.log(JSON.stringify(err));
@@ -62,23 +72,43 @@ const Login = () => {
         }
     };
 
-    const signInWithGoogle = ()=>{
+    const signInWithGoogle = () => {
         console.log('google auth');
         const provider = new GoogleAuthProvider();
         signInWithPopup(authentication, provider)
-        .then((res)=>{
-          console.log(res);
-          console.log(JSON.stringify(res));
-          dispatch(login({
-            user: res.user.displayName,
-            token: res.user.accessToken
-        }))
-        navigate('/');
-        })
-        .catch((err=>{
-          console.log(`error=> ${err.message}`);
-        }))
-      }
+            .then(async (res) => {
+                console.log(res);
+                const body = {
+                    name: res.user.displayName,
+                    email: res.user.email,
+                    password: res.user.uid
+                }
+                await axios.post(GOOGLE_AUTH, body).then((res) => {
+                    if (res.data.blocked) {
+                        toast.error('you are blocked')
+                    } else {
+                        if (res.status === 202) {
+                            localStorage.setItem('userToken', res.data.token);
+                            const decode = jwtDecode(res.data.token);
+                            dispatch(login({
+                                user: decode.name,
+                                mobile:decode.mobile,
+                                token: res.data.token
+                            }))
+                            navigate('/');
+                        }
+                    }
+                })
+                .catch((err => {
+                    toast.error(err.message)
+                }))
+
+            })
+            .catch((err => {
+                console.log(`error=> ${err.message}`);
+                toast.error(err.message)
+            }))
+    }
 
     return (
         <Container maxWidth='container.lg' padding={10}>
@@ -127,7 +157,7 @@ const Login = () => {
                                 />
                             </FormControl>
 
-                            <Button width="full" type='submit'  colorScheme="blue"
+                            <Button width="full" type='submit' colorScheme="blue"
                                 size="lg">LOGIN</Button>
 
                             <Button width="full" onClick={signInWithGoogle}
@@ -151,7 +181,7 @@ const Login = () => {
                         </Stack>
                     </form>
                 </VStack>
-
+                <Toaster />            
             </Flex>
         </Container>
 

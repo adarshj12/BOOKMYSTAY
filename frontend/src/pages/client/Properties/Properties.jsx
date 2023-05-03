@@ -1,16 +1,16 @@
 import React from 'react'
 import ClientNavbar from '../../../components/client/NavBar/NavBar'
+import Subnav from '../../../components/client/NavBar/SubNav'
 import { Box, HStack, Heading, Text, VStack } from '@chakra-ui/react'
+import AllProperty from '../../../components/client/Property/AllProperty'
 
 const Properties = () => {
   return (
     <>
     <ClientNavbar/>
+    <Subnav/>
     <VStack>
-        <Box>
-           <HStack> <Heading>Hello</Heading></HStack>
-        </Box>
-        <Box><Text>Goodmorning</Text></Box>
+        <AllProperty/>
     </VStack>
     </>
   )

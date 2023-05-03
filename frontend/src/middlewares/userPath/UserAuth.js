@@ -11,6 +11,7 @@ export default function AuthorizeUser({children}) {
         const decode = jwtDecode(token);
         store.dispatch(login({
             user:decode.name,
+            mobile:decode.mobile,
             token
         }))
         return children;
