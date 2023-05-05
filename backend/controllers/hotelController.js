@@ -5,7 +5,8 @@ const User = require('../models/usersModel')
 const multer = require('../utils/multer');
 const Client = require('../models/clientModel');
 const cloudinary = require('../utils/cloudinary');
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const imageData = require('../utils/data').city
 
 const createHotel = async (req, res) => {
     try {
@@ -446,15 +447,24 @@ const rateHotel = async (req, res) => {
 
 }
 
-const deleteBooking = async (req, res) => {
+const cancelBooking = async (req, res) => {
     try {
         const booking = await Book.findById(req.params.id)
         if (!booking) return res.status(404).json({ message: 'booking not found' })
-        await Book.findByIdAndUpdate(req.params.id, {
-            $set: {
-                status: 'canceled'
+        else {
+            let checkin = booking.checkin;
+            let currentDate = new Date();
+            let checkinDate = new Date(checkin);
+            if (checkinDate < currentDate) {
+                console.log("The check-out date is earlier than today's date");
+                return res.status(200).json('booking expired')
             }
-        })
+            await Book.findByIdAndUpdate(req.params.id, {
+                $set: {
+                    status: 'canceled'
+                }
+            })
+        }
         res.status(200).json({ message: `booking #${booking._id} canceled` });
     } catch (error) {
         console.log(error);
@@ -654,6 +664,54 @@ const getAllBookingsWRTDuration = async (req, res) => {
 }
 
 
+const topDestinations = async (req, res) => {
+    try {
+        const bookingData = await Book.aggregate([
+            {
+                '$lookup': {
+                    'from': "hotels",
+                    'localField': "hotel",
+                    'foreignField': "_id",
+                    'as': "hotelInfo"
+                }
+            },
+            {
+                '$group': {
+                    '_id': "$hotelInfo.city",
+                    'numberOfBookings': { '$sum': 1 }
+                }
+            },
+            {
+                '$project': {
+                    'city': "$_id",
+                    'numberOfBookings': 1,
+                    '_id': 0
+                }
+            },
+            {
+                '$sort': {
+                    'numberOfBookings': -1
+                }
+            }
+        ])
+        for (let i = 0; i < bookingData.length; i++) {
+            const booking = bookingData[i];
+            const city = booking.city[0].toLowerCase();
+            const cityImage = imageData.find((image) => image.city.toLowerCase() === city);
+            if (cityImage) {
+                booking.city.splice(1, 0, cityImage.url);
+            }
+        }
+        if (!bookingData) return res.status(500).json('Data  not found')
+        const data = bookingData.slice(0, 3)
+        res.status(200).json(data)
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: `Error -> ${error}` });
+    }
+}
+
+
 
 
 const updateRating = (req, res) => {
@@ -709,6 +767,7 @@ module.exports = {
     userBookingDetail,
     getAllBookings,
     rateHotel,
-    deleteBooking,
-    getAllBookingsWRTDuration
+    cancelBooking,
+    getAllBookingsWRTDuration,
+    topDestinations
 }

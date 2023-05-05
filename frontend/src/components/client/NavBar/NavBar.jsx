@@ -124,7 +124,7 @@ export default function Simple() {
             onClick={isOpen ? onClose : onOpen}
           />
           <HStack spacing={8} alignItems={'center'}>
-            <Box><Image h={10} src={logo} _hover={{ cursor: 'pointer' }} onClick={()=>navigate('/')}></Image></Box>
+            <Box><Image h={10} src={logo} _hover={{ cursor: 'pointer' }} onClick={()=>navigate('/client')}></Image></Box>
             <HStack
               as={'nav'}
               spacing={4}

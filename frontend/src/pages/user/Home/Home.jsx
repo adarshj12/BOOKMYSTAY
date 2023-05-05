@@ -16,7 +16,7 @@ const Home = () => {
                     <NavBar />
                     <Header/>
                     <TopDestinations/>
-                    <Explore/>
+                    {/* <Explore/> */}
                     {/* <FeaturedProperties/> */}
                     <Testimony/>
                 </Box>

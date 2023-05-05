@@ -9,7 +9,7 @@ export const loginUser='/users/login'
 export const otpLogin ='/users/otp'
 export const GOOGLE_AUTH ='/users/googleAuth'
 export const UPDATE_MOBILE='/users/mobileupdate'
-export const getList ='/hotels/getAll'
+export const GETLIST ='/hotels/getAll'
 
 export const DESTINATIONS='/hotels/places'
 export const COUNT_BY_CITY='/hotels/getbyCity'
@@ -20,6 +20,7 @@ export const STRIPE_BOOK = '/users/stripe_booking'
 export const GET_BOOKING = 'hotels/booking'
 export const GET_MY_BOOKINGS='/users/bookings'
 export const GET_MY_BOOKING='/users/booking'
+export const TOP_DESTINATIONS ='/hotels/top'
 //CLIENT SIDE URLS==>
 
 export const registerClient = '/client/register'

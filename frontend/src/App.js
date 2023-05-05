@@ -1,5 +1,5 @@
 import './App.css';
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense} from 'react';
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
@@ -12,7 +12,6 @@ import AuthorizeAdmin from './middlewares/adminPath/AdminAuth';
 import PublicRouteAdmin from './middlewares/adminPath/AdmnPublic';
 import AuthorizeUser from './middlewares/userPath/UserAuth';
 import PublicRouteUser from './middlewares/userPath/PublicPath';
-
 import LoaderSpinner from './pages/LoaderSpinner';
 
 const Register = lazy(() => import('./pages/user/Register'))
@@ -78,12 +77,27 @@ const AdminViewProperty = lazy(() => import('./pages/admin/Properties/SingleProp
 const AdminViewBookings = lazy(() => import('./pages/admin/Bookings/Bookings'))
 
 const ErrorPage = lazy(() => import('./pages/PageNotFound'))
+
+const Error = lazy(()=>import('./pages/ServerError'))
 function App() {
+
   return (
     <Router>
       <Routes>
 
-        <Route path='*' element={<ErrorPage />} />
+        <Route path='*' element={
+          <PublicRouteUser>
+
+            <ErrorPage />
+          </PublicRouteUser>
+        } />
+
+        <Route path='/error' element={
+          <PublicRouteUser>
+
+            <Error/>
+          </PublicRouteUser>
+        }/>
 
         {/* USER */}
 
@@ -111,21 +125,29 @@ function App() {
           } />
         <Route path='/'
           element={
-            <Home />
+            <PublicRouteUser>
+
+              <Home />
+            </PublicRouteUser>
           } />
         <Route path='/search'
           element={
+            <PublicRouteUser>
+
             <Suspense fallback={<LoaderSpinner />}>
               <List />
-
             </Suspense>
+            </PublicRouteUser>
           } />
         <Route path='/hotel'
           element={
+            <PublicRouteUser>
+
             <Suspense fallback={<LoaderSpinner />}>
               <Hotel />
 
             </Suspense>
+            </PublicRouteUser>
           } />
 
         <Route path='/profile'

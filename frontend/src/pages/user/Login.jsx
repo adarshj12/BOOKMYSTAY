@@ -19,14 +19,12 @@ import axios from '../../utils/axios';
 import { Link, useNavigate } from 'react-router-dom';
 import authimg from '../../assets/auth.jpg'
 import { GOOGLE_AUTH, loginUser } from '../../utils/API';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../../redux/userSlice';
 import jwtDecode from 'jwt-decode';
 import { FaGoogle } from 'react-icons/fa';
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { authentication } from '../../firebase/firebase';
-import GAuthModal from '../../components/user/Profile/GAuthModal'
-// import { signInWithGoogle } from '../../firebase/firebaseGoogleAuth';
 import Swal from 'sweetalert2';
 import toast, { Toaster } from "react-hot-toast";
 const Login = () => {
@@ -34,6 +32,7 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const returnTo = useSelector(state=>state.url.url)
     const handleSubmit = async (event) => {
         event.preventDefault();
         console.log(email, password);
@@ -41,7 +40,6 @@ const Login = () => {
             email,
             password
         }
-        try {
             await axios.post(loginUser, body, { headers: { "Content-Type": "application/json" } }).then((res) => {
                 console.log(res);
                 console.log(JSON.stringify(res));
@@ -60,16 +58,13 @@ const Login = () => {
                             token: res.data.token
                         }))
                         navigate('/');
+                        // navigate(returnTo);
                     }
                 }
             }).catch((err) => {
                 console.log(err);
-                console.log(JSON.stringify(err));
+                toast.error(err.message)
             })
-        } catch (error) {
-            console.log(`error=> ${error.message}`);
-            alert(error.message);
-        }
     };
 
     const signInWithGoogle = () => {

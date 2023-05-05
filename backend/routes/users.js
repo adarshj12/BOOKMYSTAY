@@ -16,7 +16,7 @@ const {
     getMyBookng 
 } = require('../controllers/userController');
 const { verifyUser } = require('../utils/verifyToken');
-const { deleteBooking } = require('../controllers/hotelController');
+const { cancelBooking } = require('../controllers/hotelController');
 const router = express.Router();
 
 router.get('/',(req,res)=>{
@@ -51,7 +51,7 @@ router.post('/googleAuth',googleAuth)
 
 router.put('/mobileupdate/:id',verifyUser,mobileUpdate);
 
-router.get('/cancel/:id',verifyUser,deleteBooking)
+router.get('/cancel/:id',verifyUser,cancelBooking)
 
 
 module.exports=router;

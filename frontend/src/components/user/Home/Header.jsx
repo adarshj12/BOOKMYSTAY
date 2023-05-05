@@ -1,40 +1,35 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Button, Input, InputGroup, InputLeftElement } from '@chakra-ui/react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-    faCalendarDays,
-    faPerson
-} from "@fortawesome/free-solid-svg-icons";
+import { Box, Button, Input,Flex,Center } from '@chakra-ui/react'
 import { DateRange } from 'react-date-range';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 import format from 'date-fns/format';
-import video from '../../../assets/montage.mp4'
+import video from '../../../assets/advertisement.mp4'
 import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from "react-hot-toast";
-import { useDispatch,useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { newSearch } from '../../../redux/searchSlice';
-import SearchBar from './Search/SearchBar'
+import Searchbar from '../Search/SearchBar'
 import { DESTINATIONS } from '../../../utils/API';
 import axios from '../../../utils/axios'
 const Header = () => {
     const [data, setData] = useState([]);
-    const mobile = useSelector(state=>state.user.mobile);
-    const user = useSelector(state=>state.user.user);
+    const mobile = useSelector(state => state.user.mobile);
+    const user = useSelector(state => state.user.user);
     const [toastShown, setToastShown] = useState(false);
     const places = async () => {
         await axios.get(DESTINATIONS).then(res => setData(res.data)).catch(err => console.log(`places fetch error : ${err.message}`))
     }
 
-    const checkgoogleAuth =()=>{
-        if(user&&!mobile&&!toastShown) 
-        toast('You have logged in with Google, please update mobile no. in profile page!', {
-            icon: '⚠️', 
-            style: {
-              color: 'black', 
-            },
-          });
-          setToastShown(true)
+    const checkgoogleAuth = () => {
+        if (user && !mobile && !toastShown)
+            toast('You have logged in with Google, please update mobile no. in profile page!', {
+                icon: '⚠️',
+                style: {
+                    color: 'black',
+                },
+            });
+        setToastShown(true)
     }
     useEffect(() => {
         places();
@@ -45,8 +40,7 @@ const Header = () => {
     const navigate = useNavigate()
     const [destination, setDestination] = useState('');
     const [openOptions, setOpenOptions] = useState(false);
-    const [isBrightness50, setIsBrightness50] = useState(true);
-    const brightnessValue = isBrightness50 ? 'brightness(50%)' : 'brightness(100%)';
+
     const [options, setOptions] = useState({
         adult: 1,
         children: 0,
@@ -82,6 +76,7 @@ const Header = () => {
             navigate('/search')
         }
     }
+    const brightnessValue = openOptions || openDate ? 'brightness(50%)' : 'brightness(100%)';
 
     return (
 
@@ -99,64 +94,66 @@ const Header = () => {
                         width: "100%",
                         height: "450px",
                         objectFit: "cover",
-                        filter: `brightness(50%)`
+                        filter: brightnessValue
                     }}
                 />
-                <Box display="flex" justifyContent="center" flexDirection={['column', 'row']} alignItems={'start'}>
-                    <SearchBar data={data} setDestination={setDestination} destination={destination} />
-                    <InputGroup flex={1}>
-                        <InputLeftElement marginTop={1}
-                            pointerEvents="none"
-                            children={<FontAwesomeIcon icon={faCalendarDays} size={'2x'} />}
-                            color="gray.300"
-                        />
-                        <Input rounded={'none'} h={65} value={`${format(dates[0].startDate, "MM/dd/yyyy")} to ${format(dates[0].endDate, "MM/dd/yyyy")}`} bg="white" onClick={() => setOpenDate(!openDate)} />
-                        {openDate && <DateRange
-                            editableDateInputs={true}
-                            onChange={item => setDates([item.selection])}
-                            moveRangeOnFirstSelection={false}
-                            ranges={dates}
-                            minDate={new Date()} 
-                        />}
-                    </InputGroup>
-                    <InputGroup flex={1}>
-                        <InputLeftElement marginTop={4}
-                            pointerEvents="none"
-                            children={<FontAwesomeIcon icon={faPerson} size={'2x'} />}
-                            color="gray.300"
-                        />
-                        <Input bg="white" rounded={'none'} h={65} value={`${options.adult} adult . ${options.children} children . ${options.room} room`} onClick={() => setOpenOptions(!openOptions)} />
-                        {openOptions &&
-                            <div className="options">
-                                <div className="optionItem">
-                                    <span className="optionText">Adult</span>
-                                    <div className="optionCounter">
-                                        <button disabled={options.adult <= 1} className="optionCounterButton" onClick={() => handleOption("adult", "dec")}>-</button>
-                                        <span className="optionCounterNumber">{options.adult}</span>
-                                        <button className="optionCounterButton" onClick={() => handleOption("adult", "inc")}>+</button>
+                <Center mt={8}>
+                    <Flex >
+                        <Box w={250} >
+
+                         <Searchbar data={data} setDestination={setDestination} destination={destination} />
+                        </Box>
+                        <Box w={250} >
+
+                            <Input _hover={{ cursor: 'context-menu' }} bg={'white'} rounded={'none'} placeholder={`${format(dates[0].startDate, "MM/dd/yyyy")} ${String.fromCharCode(0x2192)} ${format(dates[0].endDate, "MM/dd/yyyy")}`} size='md' onClick={() => setOpenDate(!openDate)} />
+                            {openDate && <DateRange
+                                className="date-range"
+                                editableDateInputs={true}
+                                onChange={item => setDates([item.selection])}
+                                moveRangeOnFirstSelection={false}
+                                ranges={dates}
+                                minDate={new Date()}
+                            />}
+
+                        </Box>
+                        <Box w={250}>
+
+                            <Input _hover={{ cursor: 'context-menu' }} bg={'white'} rounded={'none'} placeholder={`${options.adult} adult . ${options.children} children . ${options.room} room`} size='md' onClick={() => setOpenOptions(!openOptions)} />
+                            {openOptions &&
+                                <div className="date-range">
+                                    <div className="options">
+                                        <div className="optionItem">
+                                            <span className="optionText">Adult</span>
+                                            <div className="optionCounter">
+                                                <button disabled={options.adult <= 1} className="optionCounterButton" onClick={() => handleOption("adult", "dec")}>-</button>
+                                                <span className="optionCounterNumber">{options.adult}</span>
+                                                <button className="optionCounterButton" onClick={() => handleOption("adult", "inc")}>+</button>
+                                            </div>
+                                        </div>
+                                        <div className="optionItem">
+                                            <span className="optionText">Children</span>
+                                            <div className="optionCounter">
+                                                <button disabled={options.children <= 0} className="optionCounterButton" onClick={() => handleOption("children", "dec")}>-</button>
+                                                <span className="optionCounterNumber">{options.children}</span>
+                                                <button className="optionCounterButton" onClick={() => handleOption("children", "inc")}>+</button>
+                                            </div>
+                                        </div>
+                                        <div className="optionItem">
+                                            <span className="optionText">Room</span>
+                                            <div className="optionCounter">
+                                                <button disabled={options.room <= 1} className="optionCounterButton" onClick={() => handleOption("room", "dec")}>-</button>
+                                                <span className="optionCounterNumber">{options.room}</span>
+                                                <button className="optionCounterButton" onClick={() => handleOption("room", "inc")}>+</button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="optionItem">
-                                    <span className="optionText">Children</span>
-                                    <div className="optionCounter">
-                                        <button disabled={options.children <= 0} className="optionCounterButton" onClick={() => handleOption("children", "dec")}>-</button>
-                                        <span className="optionCounterNumber">{options.children}</span>
-                                        <button className="optionCounterButton" onClick={() => handleOption("children", "inc")}>+</button>
-                                    </div>
-                                </div>
-                                <div className="optionItem">
-                                    <span className="optionText">Room</span>
-                                    <div className="optionCounter">
-                                        <button disabled={options.room <= 1} className="optionCounterButton" onClick={() => handleOption("room", "dec")}>-</button>
-                                        <span className="optionCounterNumber">{options.room}</span>
-                                        <button className="optionCounterButton" onClick={() => handleOption("room", "inc")}>+</button>
-                                    </div>
-                                </div>
-                            </div>}
-                    </InputGroup>
-                    <Button rounded={'none'} w={100} h={65} backgroundColor={'blue.400'} onClick={() => handleSearch()}>Search</Button>
-                    <Toaster />
-                </Box>
+                            }
+                        </Box>
+                        <Button w={100} bg={'orange.600'} _hover={{ bgColor: "none" }} rounded={'none'} onClick={() => handleSearch()}>Search</Button>
+                    </Flex>
+                </Center>
+                <Toaster/>
             </Box>
         </>
 

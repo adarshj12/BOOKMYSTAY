@@ -305,8 +305,8 @@ const createBooking = async (hotelId, roomTitle, dateRange, count, user, payment
 // }
 
 const BOOKING_DETAILS = {}
-
-const bookingDetails = (req, res) => {
+let stripe_username =''
+const bookingDetails = async(req, res) => {
     try {
         BOOKING_DETAILS.user = req.body.userId;
         BOOKING_DETAILS.dateRange = req.body.dateRange;
@@ -314,6 +314,8 @@ const bookingDetails = (req, res) => {
         BOOKING_DETAILS.room = req.body.room;
         BOOKING_DETAILS.count = req.body.count;
         BOOKING_DETAILS.rate = req.body.rate
+        const user=await User.findById(req.body.userId)
+        stripe_username=user.username
         console.log(BOOKING_DETAILS);
         res.status(201).json({ success: true })
     } catch (error) {
@@ -481,6 +483,7 @@ const getMyBookng = async (req, res) => {
                     'user.email': 1,
                     'user.mobile': 1,
                     'booking_date': 1,
+                    'status': 1,
                     'hotel._id': 1,
                     'hotel.name': 1,
                     'hotel.type': 1,

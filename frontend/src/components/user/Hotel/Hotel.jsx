@@ -19,17 +19,20 @@ import { GiCoffeeCup } from 'react-icons/gi';
 import { TbAirConditioning, TbFridge } from 'react-icons/tb';
 import { MdSignalWifi3Bar } from 'react-icons/md';
 import RoomSelection from './RoomSelectionModal';
+import { setLastVisitedUrl } from '../../../redux/urlSlice';
 import Map from './LocationMap';
 import SliderComponent from './ImageSlider'
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate ,Navigate} from 'react-router-dom';
 import axios from '../../../utils/axios'
 import { gethotel } from '../../../utils/API'
 import { GET_HOTEL_ROOMS } from '../../../utils/API'
 import Swal from 'sweetalert2';
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
+import toast, { Toaster } from "react-hot-toast";
 const Hotel = () => {
     const location = useLocation();
     const navigate = useNavigate()
+    const dispatch = useDispatch()
     const search = useSelector(state => state.search)
     const user = useSelector(state => state.user.user)
     // console.log(search);
@@ -47,17 +50,17 @@ const Hotel = () => {
             if (res.status === 200) {
                 setHotel(res.data)
             } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Data not found'
-                })
+                toast.error('data not found')
+                navigate('/error')
             }
         }).catch((err) => {
             console.log(err)
+            toast.error(err.message)
+                navigate('/error')
         })
 
     }
-    const getRooms = async (req, res) => {
+    const getRooms = async () => {
         //tokn send
         await axios.get(`${GET_HOTEL_ROOMS}/${location.state.data}/${startDate}/${endDate}`, { headers: { 'Content-Type': 'application/json' } }).then((res) => {
             if (res.status === 200) {
@@ -78,19 +81,22 @@ const Hotel = () => {
 
                 setTitleCount(newTitleCount);
             } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Data not found'
-                })
+                toast.error('data not found')
+                navigate('/error')
             }
         }).catch((err) => {
             console.log(err)
+            toast.error(err.message)
+                navigate('/error')
         })
     }
 
     useEffect(() => {
         getDetails();
         getRooms();
+        dispatch(setLastVisitedUrl({
+            url:window.location.pathname
+          }))
     }, [])
     // console.log('rooms array',rooms)
     //console.log('frequency counter',titleCount)
@@ -270,7 +276,7 @@ const Hotel = () => {
                         )
                     })
                 }
-
+                <Toaster/>
             </Box>
 
 

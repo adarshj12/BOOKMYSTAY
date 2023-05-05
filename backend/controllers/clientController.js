@@ -197,16 +197,76 @@ const getData = async (req, res) => {
   }
 }
 
-const changeBookingStatus =async(req,res)=>{
+const changeBookingStatus = async (req, res) => {
   try {
-    await Book.findByIdAndUpdate(req.params.id,{
-      $set:{
-        status:'confirmed'
+    await Book.findByIdAndUpdate(req.params.id, {
+      $set: {
+        status: 'confirmed'
       }
     })
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: `Error -> ${error}` });
+  }
+}
+
+const cancelledBookings = async (req, res) => {
+  try {
+    console.log(req.query.id);
+    const details = await Hotel.aggregate([
+      {
+        '$match': {
+          'client': new mongoose.Types.ObjectId(req.query.id)
+        }
+      },
+      {
+        '$lookup': {
+          'from': 'bookings',
+          'localField': '_id',
+          'foreignField': 'hotel',
+          'as': 'booking'
+        }
+      }, {
+        '$unwind': {
+          'path': '$booking'
+        }
+      }, {
+        '$match': {
+          'booking.status': 'canceled'
+        }
+      }, {
+        '$lookup': {
+          'from': 'users',
+          'localField': 'booking.user',
+          'foreignField': '_id',
+          'as': 'user'
+        }
+      }, {
+        '$unwind': {
+          'path': '$user'
+        }
+      }, {
+        '$project': {
+          '_id': 1,
+          'name': 1,
+          'client': 1,
+          'type': 1,
+          'city': 1,
+          'address': 1,
+          'booking.booking_date': 1,
+          'booking.rate': 1,
+          'booking.checkin': 1,
+          'booking.checkout': 1,
+          'user.username': 1,
+          'user.email': 1,
+          'user.mobile': 1
+        }
+      }
+    ])
+    if (details.length===0) return res.status(400).json('no cancellations');
+    res.status(400).json(details);
+  } catch (error) {
+
   }
 }
 
@@ -218,5 +278,6 @@ module.exports = {
   getClientBookings,
   getBookingsPagination,
   getData,
-  changeBookingStatus
+  changeBookingStatus,
+  cancelledBookings
 }

@@ -1,169 +1,100 @@
-import React, { useState } from "react";
-import {
-    Box,
-    Button,
-    Flex,
-    Input,
-    InputGroup,
-    InputLeftAddon,
-    NumberInput,
-    NumberInputField,
-    NumberInputStepper,
-    NumberIncrementStepper,
-    NumberDecrementStepper,
-    Text,
-    useDisclosure,
-} from "@chakra-ui/react";
-import { DateRange } from "react-date-range";
-import "react-date-range/dist/styles.css";
-import "react-date-range/dist/theme/default.css";
-import { format } from "date-fns";
-import { useSelector } from "react-redux";
+// import React, { useState } from 'react';
+// import { Box, Button, HStack, Input, InputGroup, InputLeftElement, VStack, Flex, Text } from '@chakra-ui/react';
 
-const SearchBox = () => {
-    let destination=useSelector(state=>state.search.city);
-    let dates = useSelector(state=>state.search.dates);
-    const { isOpen, onToggle } = useDisclosure();
-    const [date, setDate] = React.useState([
-        {
-            startDate: new Date(),
-            endDate: new Date(),
-            key: "selection",
-        },
-    ]);
+// const SearchBar = ({ data, setDestination, destination }) => {
+//     const [filter, setFilter] = useState([]);
+
+//     const handleFilter = (e) => {
+//         const searchWord = e.target.value;
+//         const newFilter = data.filter((value) => {
+//             return value.city.toLowerCase().includes(searchWord.toLowerCase());
+//         });
+//         if (searchWord === "") {
+//             setFilter([]);
+//         } else {
+//             setFilter(newFilter);
+
+//         }
+//     };
+
+//     const selection = (place) => {
+//         setDestination(place);
+//         setFilter([]);
+//     };
+
+//     return (
+//         <>
+//             <InputGroup>
+//                 <VStack sx={{ maxWidth: '250', position: 'relative' }}>
+//                     <Input style={{ width: '250px' }} rounded={'none'} bg="white" placeholder={destination} defaultValue={destination} onChange={handleFilter} />
+//                     {filter.length !== 0 &&
+//                         <div className="dataResult" style={{ width: '-webkit-fill-available', position: 'absolute', top: '100%', zIndex: '1' }}>
+//                             {filter.slice(0, 5).map((value, key) => (
+//                                 <Box className='dataItem' _hover={{ cursor: 'pointer', bg: 'gray.100' }} key={key}>
+//                                     <Text onClick={() => selection(value.city)}>{value.city}</Text>
+//                                 </Box>
+//                             ))}
+//                         </div>
+//                     }
+//                 </VStack>
+//             </InputGroup>
+
+
+//         </>
+//     );
+// };
+
+// export default SearchBar;
+
+import React, { useState } from 'react';
+import { Box, Input, InputGroup, VStack, Text } from '@chakra-ui/react';
+
+const SearchBar = ({ data, setDestination, destination }) => {
+    const [filter, setFilter] = useState([]);
+
+    const handleFilter = (e) => {
+        const searchWord = e.target.value;
+        const newFilter = data.filter((value) => {
+            return value.city.toLowerCase().includes(searchWord.toLowerCase());
+        });
+        if (searchWord === "") {
+            setFilter([]);
+        } else {
+            setFilter(newFilter);
+        }
+        setDestination(searchWord);
+    };
+
+    const selection = (place) => {
+        setDestination(place);
+        setFilter([]);
+    };
 
     return (
-        <Flex justify="center" mt="20px">
-            <Box w="100%" maxW="1024px" display="flex" gap="20px">
-                <Box
-                    flex="1"
-                    bgColor="#1496fd"
-                    p="10px"
-                    borderRadius="10px"
-                    position="sticky"
-                    top="10px"
-                    height="max-content"
-                >
-                    <Text fontSize="20px" color="#555" mb="10px">
-                        Search
-                    </Text>
-                    <Box mb="10px">
-                        <Text fontSize="12px" mb="5px">
-                            Destination
-                        </Text>
-                        <Input placeholder={destination} bg={'white'} />
-                    </Box>
-                    <Box mb="10px">
-                        <Text fontSize="12px" mb="5px">
-                            Check-in-Date
-                        </Text>
-                        <Box onClick={onToggle} cursor="pointer">
-                            <Text height="30px" p="5px" bgColor="white" display="flex" alignItems="center">
-                                {`${format(date[0].startDate, "MM/dd/yyyy")} to ${format(date[0].endDate, "MM/dd/yyyy")}`}
-                            </Text>
-                        </Box>
-                        {isOpen && (
-                            <DateRange
-                                onChange={(item) => setDate([item.selection])}
-                                minDate={new Date()}
-                                ranges={date}
-                                className="datePicker"
-                            />
-                        )}
-                    </Box>
-                    <Box mb="10px">
-                        <Text fontSize="12px" mb="5px">
-                            Options
-                        </Text>
-                        <Box p="10px" bgColor="#f5f5f5">
-                            <Box mb="10px">
-                                <Flex justifyContent="space-between" color="#555" fontSize="12px">
-                                    <Text>Min price</Text>
-                                    <InputGroup width="50%">
-                                        <InputLeftAddon children="$" />
-                                        <NumberInput defaultValue={0} min={0} max={10000}>
-                                            <NumberInputField />
-                                            <NumberInputStepper>
-                                                <NumberIncrementStepper />
-                                                <NumberDecrementStepper />
-                                            </NumberInputStepper>
-                                        </NumberInput>
-                                    </InputGroup>
-                                </Flex>
-                            </Box>
-                            <Box mb="10px">
-                                <Flex justifyContent="space-between" color="#555" fontSize="12px">
-                                    <Text>Max price</Text>
-                                    <InputGroup width="50%">
-                                        <InputLeftAddon children="$" />
-                                        <NumberInput defaultValue={10000} min={0} >
-                                            <NumberInputField />
-                                            <NumberInputStepper>
-                                                <NumberIncrementStepper />
-                                                <NumberDecrementStepper />
-                                            </NumberInputStepper>
-                                        </NumberInput>
-                                    </InputGroup>
-                                </Flex>
-                            </Box>
-                            <Box mb="10px">
-                                <Flex justifyContent="space-between" color="#555" fontSize="12px">
-                                    <Text>Adult</Text>
-                                    <InputGroup width="50%">
-                                        <InputLeftAddon children="$" />
-                                        <NumberInput defaultValue={1} min={1} >
-                                            <NumberInputField />
-                                            <NumberInputStepper>
-                                                <NumberIncrementStepper />
-                                                <NumberDecrementStepper />
-                                            </NumberInputStepper>
-                                        </NumberInput>
-                                    </InputGroup>
-                                </Flex>
-                            </Box>
-                            <Box mb="10px">
-                                <Flex justifyContent="space-between" color="#555" fontSize="12px">
-                                    <Text>Children</Text>
-                                    <InputGroup width="50%">
-                                        <InputLeftAddon children="$" />
-                                        <NumberInput defaultValue={0} min={0} >
-                                            <NumberInputField />
-                                            <NumberInputStepper>
-                                                <NumberIncrementStepper />
-                                                <NumberDecrementStepper />
-                                            </NumberInputStepper>
-                                        </NumberInput>
-                                    </InputGroup>
-                                </Flex>
-                            </Box>
-                            <Box mb="10px">
-                                <Flex justifyContent="space-between" color="#555" fontSize="12px">
-                                    <Text>Room</Text>
-                                    <InputGroup width="50%">
-                                        <InputLeftAddon children="$" />
-                                        <NumberInput defaultValue={0} min={0} >
-                                            <NumberInputField />
-                                            <NumberInputStepper>
-                                                <NumberIncrementStepper />
-                                                <NumberDecrementStepper />
-                                            </NumberInputStepper>
-                                        </NumberInput>
-                                    </InputGroup>
-                                </Flex>
-                            </Box>
+        <>
+            <InputGroup>
+                <VStack sx={{ maxWidth: '250', position: 'relative' }}>
+                    <Input
+                        style={{ width: '250px' }}
+                        rounded={'none'}
+                        bg="white"
+                        placeholder={destination?destination:'Where are you going ?'}
+                        value={destination}
+                        onChange={handleFilter}
+                    />
+                    {filter.length !== 0 &&
+                        <div className="dataResult" style={{ width: '-webkit-fill-available', position: 'absolute', top: '100%', zIndex: '1' }}>
+                            {filter.slice(0, 5).map((value, key) => (
+                                <Box className='dataItem' _hover={{ cursor: 'pointer', bg: 'gray.100' }} key={key}>
+                                    <Text onClick={() => selection(value.city)}>{value.city}</Text>
+                                </Box>
+                            ))}
+                        </div>
+                    }
+                </VStack>
+            </InputGroup>
+        </>
+    );
+};
 
-                        </Box>
-                        <Box mt={5} mb="10px"  alignItems="center">
-                            <Flex justifyContent="space-between" color="#555" fontSize="12px" >
-                                <Button>Search</Button>
-                            </Flex>
-                        </Box>
-
-                    </Box>
-                </Box>
-            </Box>
-        </Flex>
-    )
-}
-
-export default SearchBox;
+export default SearchBar;

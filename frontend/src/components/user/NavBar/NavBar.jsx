@@ -44,18 +44,18 @@ import jwtDecode from "jwt-decode";
 const NavBar = () => {
     const navigate = useNavigate()
     const { isOpen, onOpen, onClose } = useDisclosure();
-    let user=null;
+    let user = null;
     user = useSelector(state => state.user.user);
     // console.log(user);
     const dispatch = useDispatch();
-    const logoutUser =()=>{
+    const logoutUser = () => {
         localStorage.removeItem('userToken');
         dispatch(logout());
         navigate('/')
     }
-    const profile=()=>{
+    const profile = () => {
         const decode = jwtDecode(localStorage.getItem('userToken'));
-        navigate('/profile',{state:{data:decode.id}})
+        navigate('/profile', { state: { data: decode.id } })
     }
     return (
         <>
@@ -70,7 +70,7 @@ const NavBar = () => {
                     />
                     <HStack spacing={8} alignItems={'center'}>
                         <Box color={'whiteAlpha.900'}>
-                            <Image h={10} src={logo} _hover={{ cursor: 'pointer' }} onClick={()=>navigate('/')}></Image>
+                            <Image h={10} src={logo} _hover={{ cursor: 'pointer' }} onClick={() => navigate('/')}></Image>
                         </Box>
                         <HStack
                             as={'nav'}
@@ -82,7 +82,7 @@ const NavBar = () => {
                         </HStack>
                     </HStack>
                     <Flex alignItems={'center'}>
-                      {!user&&  <Link to='/clientlogin'><Text color={'whiteAlpha.700'} marginRight={15}>Manage Your Property</Text></Link>}
+                        {!user && <Link to='/clientlogin'><Text color={'whiteAlpha.700'} marginRight={15}>Manage Your Property</Text></Link>}
                         {
                             user ?
                                 <Menu>
@@ -107,8 +107,13 @@ const NavBar = () => {
                                     </MenuList>
                                 </Menu> :
                                 <HStack>
-                                    <Button rounded={'none'} onClick={() => navigate('/login')}>LOGIN</Button>
-                                    <Button rounded={'none'} onClick={() => navigate('/register')}>REGISTER</Button>
+                                    <Button
+                                        rounded={'none'}
+                                        colorScheme="orange"
+                                        bgGradient="linear(to-r, orange.400, orange.500, orange.600)"
+                                        color="white"
+                                        variant="solid"
+                                        onClick={() => navigate('/login')}>LOGIN</Button>
                                 </HStack>
                         }
                     </Flex>

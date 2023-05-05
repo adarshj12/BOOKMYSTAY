@@ -1,9 +1,11 @@
 import { Box, Heading, Text, Button } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
-
+import Navbar from '../components/user/NavBar/NavBar'
 export default function NotFound() {
   const navigate = useNavigate()
   return (
+   <>
+   <Navbar/>
     <Box textAlign="center" py={20} px={6}>
       <Heading
         display="inline-block"
@@ -42,5 +44,6 @@ export default function NotFound() {
         </Button>
       }
     </Box>
+   </>
   );
 }

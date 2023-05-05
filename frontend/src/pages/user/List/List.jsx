@@ -5,7 +5,7 @@ import { Heading } from '@chakra-ui/react'
 import SearchBox from '../../../components/user/Search/SearchBar'
 import SearchItem from '../../../components/user/Search/Search'
 import Footer from '../../../components/user/Footer/Footer'
-import {getList} from '../../../utils/API'
+import {GETLIST} from '../../../utils/API'
 import axios from '../../../utils/axios'
 import { useSelector } from "react-redux";
 const List = () => {
@@ -13,7 +13,7 @@ const List = () => {
   const destination = useSelector(state=>state.search.city)
   const getSearchList=async()=>{
     try {
-      await axios.get(`${getList}?city=${destination}`).then((res)=>{
+      await axios.get(`${GETLIST}?city=${destination}`).then((res)=>{
         // console.log(res);
         setData(res.data)
       }).catch((err)=>{

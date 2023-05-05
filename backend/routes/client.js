@@ -1,5 +1,5 @@
 const express = require('express');
-const { register, login, checkVerification, getProperty, getClientBookings, getBookingsPagination, getData, changeBookingStatus } = require('../controllers/clientController');
+const { register, login, checkVerification, getProperty, getClientBookings, getBookingsPagination, getData, changeBookingStatus, cancelledBookings } = require('../controllers/clientController');
 const { verifyClient } = require('../utils/verifyToken');
 const { createHotel, getClientProperties, deleteProperty, updateProperty, userBookingDetail } = require('../controllers/hotelController');
 const multer = require('../utils/multer');
@@ -30,5 +30,7 @@ router.get('/getUserBookingDetail/:id',verifyClient,userBookingDetail);
 router.get('/earnings/:id',verifyClient,getData);
 
 router.get('/bookingstatus/:id',verifyClient,changeBookingStatus)
+
+router.get('/cancellations',verifyClient,cancelledBookings)
 
 module.exports=router;
