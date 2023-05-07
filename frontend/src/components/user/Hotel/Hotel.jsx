@@ -22,12 +22,12 @@ import RoomSelection from './RoomSelectionModal';
 import { setLastVisitedUrl } from '../../../redux/urlSlice';
 import Map from './LocationMap';
 import SliderComponent from './ImageSlider'
-import { useLocation, useNavigate ,Navigate} from 'react-router-dom';
+import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import axios from '../../../utils/axios'
 import { gethotel } from '../../../utils/API'
-import { GET_HOTEL_ROOMS } from '../../../utils/API'
+import { GET_HOTEL_ROOMS, HOTEL_RATING } from '../../../utils/API'
 import Swal from 'sweetalert2';
-import { useSelector,useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import toast, { Toaster } from "react-hot-toast";
 const Hotel = () => {
     const location = useLocation();
@@ -45,6 +45,7 @@ const Hotel = () => {
     const [rate, setRate] = useState(0)
     const [rooms, setRooms] = useState([])
     const [titleCount, setTitleCount] = useState({})
+    const [rating, setRating] = useState(0)
     const getDetails = async () => {
         await axios.get(`${gethotel}/${location.state.data}`, { headers: { 'Content-Type': 'application/json' } }).then((res) => {
             if (res.status === 200) {
@@ -56,7 +57,7 @@ const Hotel = () => {
         }).catch((err) => {
             console.log(err)
             toast.error(err.message)
-                navigate('/error')
+            navigate('/error')
         })
 
     }
@@ -87,16 +88,21 @@ const Hotel = () => {
         }).catch((err) => {
             console.log(err)
             toast.error(err.message)
-                navigate('/error')
+            navigate('/error')
         })
     }
-
+    const getRating = async () => {
+        await axios.get(`${HOTEL_RATING}/${location.state.data}`).then(res => {
+            setRating(res.data[0].rating)
+        })
+    }
     useEffect(() => {
         getDetails();
         getRooms();
+        getRating()
         dispatch(setLastVisitedUrl({
-            url:window.location.pathname
-          }))
+            url: window.location.pathname
+        }))
     }, [])
     // console.log('rooms array',rooms)
     //console.log('frequency counter',titleCount)
@@ -121,14 +127,25 @@ const Hotel = () => {
         };
     });
 
+    // const containerStyles = {
+    //     width: "1300px",
+    //     height: "500px",
+    //     margin: "0 auto",
+    // };
+    // const roomStyles = {
+    //     width: "300px",
+    //     height: "250px",
+    //     margin: "0 auto",
+    // };
+
     const containerStyles = {
-        width: "1300px",
-        height: "500px",
+        maxWidth: "1300px",
+        height: "50vw",
         margin: "0 auto",
     };
     const roomStyles = {
-        width: "300px",
-        height: "250px",
+        width: "90%",
+        height: "25vw",
         margin: "0 auto",
     };
 
@@ -170,13 +187,18 @@ const Hotel = () => {
                 <HStack>
                     <Heading flex="1">{hotel?.name}</Heading>
                     <Spacer />
-                    <Button bgColor="#003580" color="white" fontWeight="bold" borderRadius={0} _hover={{ bgColor: "none" }} >8.9</Button>
+                    <Button bgColor="#003580" color="white" fontWeight="bold" borderRadius={0} _hover={{ bgColor: "none" }} >
+                        {Number(rating.toFixed(1))}
+                    </Button>
                 </HStack>
                 <HStack mb={10}>
                     <FaMapMarkerAlt />
-                    <Text>Bharath Cancer Hospital Mysore  </Text>
+                    <Text>{hotel?.landmark}</Text>
                     <SiGooglestreetview style={{ color: "#286c16" }} />
-                    <Map />
+                    <Map
+                        lattitude={hotel?.lattitude}
+                        longitude={hotel?.longitude}
+                    />
                 </HStack>
                 <Box style={containerStyles}>
                     <SliderComponent slides={slides} />
@@ -186,35 +208,36 @@ const Hotel = () => {
                     <Spacer />
 
                 </Flex>
-                <HStack>
-                    <HStack><GiCoffeeCup /><Text>Restaurant</Text> </HStack>
-                    <Center height='40px'  >
-                        <Divider orientation='vertical' />
-                    </Center>
-                    <HStack><TbAirConditioning /><Text>Air Conditioning</Text> </HStack>
-                    <Center height='40px'  >
-                        <Divider orientation='vertical' />
-                    </Center>
-                    <HStack><MdSignalWifi3Bar /><Text>Wi-Fi</Text> </HStack>
-                    <Center height='40px'  >
-                        <Divider orientation='vertical' />
-                    </Center>
-                    <HStack><TbFridge /><Text>Refrigerator</Text> </HStack>
-                    <Center height='40px'  >
-                        <Divider orientation='vertical' />
-                    </Center>
-                    <HStack><FaParking /><Text>Parking</Text> </HStack>
-                </HStack>
+                <Flex direction={['column', 'row']} justify='space-between' align='center'>
+                    <HStack>
+                        <GiCoffeeCup /><Text>Restaurant</Text>
+                    </HStack>
+                    <Divider orientation='vertical' display={['none', 'block']} />
+                    <HStack>
+                        <TbAirConditioning /><Text>Air Conditioning</Text>
+                    </HStack>
+                    <Divider orientation='vertical' display={['none', 'block']} />
+                    <HStack>
+                        <MdSignalWifi3Bar /><Text>Wi-Fi</Text>
+                    </HStack>
+                    <Divider orientation='vertical' display={['none', 'block']} />
+                    <HStack>
+                        <TbFridge /><Text>Refrigerator</Text>
+                    </HStack>
+                    <Divider orientation='vertical' display={['none', 'block']} />
+                    <HStack>
+                        <FaParking /><Text>Parking</Text>
+                    </HStack>
+                </Flex>
+
                 <Text mt={50} fontSize={20} fontWeight={600}>About The Hotel</Text>
                 <Text mt={25}>{hotel?.desc}
                 </Text>
                 <Text mt={50} fontSize={20} fontWeight={600}>Address</Text>
                 <Text mt={25}>{hotel?.address}</Text>
-                <Flex>
-                    <Text mt={50} fontSize={20} fontWeight={600}>Room Types</Text>
-                    <Spacer />
 
-                </Flex>
+                {rooms && <Text mt={50} fontSize={20} fontWeight={600}>Room Types</Text>}
+
 
 
                 {
@@ -261,8 +284,8 @@ const Hotel = () => {
                                                 :
                                                 <Button
                                                     mt={10}
-                                                    colorScheme="red"
-                                                    bgGradient="linear(to-r, red.400, red.500, red.600)"
+                                                    colorScheme="orange"
+                                                    bgGradient="linear(to-r, orange.400, orange.500, orange.600)"
                                                     color="white"
                                                     variant="solid"
                                                     onClick={() => navigate('/login')}
@@ -276,7 +299,7 @@ const Hotel = () => {
                         )
                     })
                 }
-                <Toaster/>
+                <Toaster />
             </Box>
 
 

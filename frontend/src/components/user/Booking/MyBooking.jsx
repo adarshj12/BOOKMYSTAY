@@ -71,14 +71,19 @@ const Booking = () => {
                             <Heading >{booking?.hotel?.name}</Heading>
                         </Box>
                         <Spacer />
-                        {!status&&
+                        {status?
+                            <VStack>
+                                <Heading fontStyle={'italic'} color={'red'} fontFamily={'sans-serif'}>Canceled</Heading>
+                                <Text>Awaiting Refund</Text>
+                            </VStack>
+                            :
                             <Box p='4'>
                                 {
                                     cancel &&
                                     <HStack>
                                         <VStack>
                                             <HiOutlineChatAlt2 fontSize={50} color={'blue.800'} onClick={() => navigate('/profile/chat')} />
-                                            <Text>Chat With Client</Text>
+                                            <Text>Chat With {booking?.hotel?.name} HR</Text>
                                         </VStack>
 
 

@@ -1,13 +1,12 @@
 const express = require('express');
-const { login, getAllUsers, getAllClients, blockClient, verifyClient, blockUsers, getAllProperties, payments, payclient, dashboard } = require('../controllers/adminController');
+const { login, getAllUsers, getAllClients, blockClient, verifyClient, blockUsers, getAllProperties, payments, payclient, dashboard, addBanner, updateBanner, addCityImage, checkout, verification, paytoClientDetails } = require('../controllers/adminController');
 require('dotenv').config()
 const router = express.Router();
-const jwt = require('jsonwebtoken');
 const { verifyAdmin } = require('../utils/verifyToken');
 const { deleteProperty, getAllBookings, getAllBookingsWRTDuration } = require('../controllers/hotelController');
-const { getUserDetail, deleteuser, updateUser } = require('../controllers/userController');
+const { getUserDetail, deleteuser, updateUser, banner, cities } = require('../controllers/userController');
 const { deleteclient } = require('../controllers/clientController');
-
+const multer = require('../utils/multer');
 
 router.post('/login', login);
 
@@ -39,8 +38,22 @@ router.get('/getBookings',verifyAdmin,getAllBookingsWRTDuration)
 
 router.get('/payments/:page/:size',verifyAdmin,payments)
 
-router.put('/payclient',verifyAdmin,payclient)
+router.put('/payclient',verifyAdmin,paytoClientDetails)
 
-router.get('/dashboard',verifyAdmin,dashboard)
+router.get('/dashboard',verifyAdmin,dashboard);
+
+router.post('/banner',verifyAdmin,multer.single('video'),addBanner);
+
+router.put('/updatebanner/:id',verifyAdmin,multer.single('video'),updateBanner);
+
+router.get('/banner',verifyAdmin,banner);
+
+router.post('/city',verifyAdmin,multer.single('image'),addCityImage);
+
+router.get('/cities',verifyAdmin,cities)
+
+router.post('/checkout',checkout);
+
+router.post('/verification',verification)
 
 module.exports = router;

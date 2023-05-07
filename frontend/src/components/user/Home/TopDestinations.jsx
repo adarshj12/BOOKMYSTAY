@@ -1,4 +1,4 @@
-import { Image, Box, Stack, Flex, Text, Container, Heading, Center, HStack, VStack, Spacer } from '@chakra-ui/react'
+import { Image, Box, Stack, Flex, Text, Container,Grid, Heading, Center, HStack, VStack, Spacer,useBreakpointValue } from '@chakra-ui/react'
 import axios from '../../../utils/axios'
 import { COUNT_BY_CITY } from '../../../utils/API'
 import { TOP_DESTINATIONS } from '../../../utils/API'
@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { newSearch } from '../../../redux/searchSlice';
 const TopDestinations = () => {
+  const columns = useBreakpointValue({ base: 1, md: 3 });
   const dispatch = useDispatch();
   const navigate = useNavigate()
   const [data, setData] = useState([])
@@ -58,7 +59,7 @@ const TopDestinations = () => {
   }
   return (
     <>
-      <Container ml={50} mt={10} maxW={'7xl'}>
+      {/* <Container ml={50} mt={10} maxW={'7xl'}>
         <Center>
 
           <VStack>
@@ -79,11 +80,11 @@ const TopDestinations = () => {
           {top && top.map((elem, i) => {
             return (
               <Flex p={8} position='relative' direction='column' alignItems='center' key={i}>
-                <Image h={400} w={300} objectFit='cover' src={elem.city[1]} alt={elem.city[0]} _hover={{ cursor: 'pointer' }} 
-                onClick={()=>handleSearch(elem.city[0])} 
+                <Image h={400} w={300} objectFit='cover' src={elem.photo} alt={elem.city} _hover={{ cursor: 'pointer' }} 
+                onClick={()=>handleSearch(elem.city)} 
                 />
                 <Box position='absolute' top={'50%'} left={0} zIndex={1} transform='translate(50%, 50%)'>
-                  <Heading fontWeight='bold' color='white'>{elem.city[0]}</Heading>
+                  <Heading fontWeight='bold' color='white'>{elem.city}</Heading>
                 </Box>
               </Flex>
             )
@@ -92,7 +93,37 @@ const TopDestinations = () => {
           }
         </Stack>
 
-      </Container>
+      </Container> */}
+      <Container  mt={10} maxW={'7xl'}>
+      <Center>
+        <VStack>
+          <Heading textTransform={'uppercase'}>Top Destinations</Heading>
+          <HStack color={'blackAlpha.500'}>
+            <Text>100+ Cities</Text>
+            <Spacer />
+            <Text>1000+ Hotels</Text>
+            <Spacer />
+            <Text>20000+ Rooms</Text>
+            <Spacer />
+            <Text>3M+ Happy Guests</Text>
+          </HStack>
+        </VStack>
+      </Center>
+      <Grid templateColumns={`repeat(${columns}, 1fr)`} gap={4}>
+        {top && top.map((elem, i) => {
+          return (
+            <Box key={i}>
+              <Flex p={8} position='relative' direction='column' alignItems='center'>
+                <Image h={400} w={300} objectFit='cover' src={elem.photo} alt={elem.city} _hover={{ cursor: 'pointer' }} onClick={() => handleSearch(elem.city)} />
+                <Box position='absolute' top={'50%'} left={0} zIndex={1} transform='translate(50%, 50%)'>
+                  <Heading fontWeight='bold' color='white'>{elem.city}</Heading>
+                </Box>
+              </Flex>
+            </Box>
+          )
+        })}
+      </Grid>
+    </Container>
 
     </>
   )

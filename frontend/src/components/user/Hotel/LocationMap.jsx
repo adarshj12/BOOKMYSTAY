@@ -13,7 +13,7 @@ import {
 import { Map, Marker, NavigationControl } from 'react-map-gl';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-const TransitionExample = () => {
+const TransitionExample = ({lattitude,longitude}) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   return (
     <>
@@ -32,8 +32,8 @@ const TransitionExample = () => {
 
             <Map mapLib={maplibregl}
               initialViewState={{
-                longitude: 76.264960,
-                latitude: 12.241470,
+                longitude,
+                latitude:lattitude,
                 zoom: 14
               }}
               style={{ width: "400px", height: " 300px" }}
@@ -41,8 +41,8 @@ const TransitionExample = () => {
             >
               <NavigationControl position="top-left" />
               <Marker
-                longitude={76.264960}
-                latitude={12.241470}
+                longitude={longitude}
+                latitude={lattitude}
 
               />
             </Map>

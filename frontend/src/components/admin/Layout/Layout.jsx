@@ -41,7 +41,9 @@ import {
   FaUserCog,
   FaBuilding,
   FaRupeeSign,
-  FaUserTie
+  FaUserTie,
+  FaVideo,
+  FaFileImage
 } from 'react-icons/fa'
 import {GiArchiveRegister} from 'react-icons/gi'
 import { IconType } from 'react-icons';
@@ -56,6 +58,9 @@ const LinkItems = [
   { name: 'Properties', icon: FaBuilding, path: '/admin/properties' },
   { name: 'Bookings', icon: GiArchiveRegister, path: '/admin/getBookings' },
   { name: 'Payments', icon: FaRupeeSign, path: '/admin/payments' },
+  { name: 'Banner', icon: FaVideo, path: '/admin/banner' },
+  { name: 'Cities', icon: FaFileImage, path: '/admin/images' },
+
 ];
 
 
@@ -92,26 +97,6 @@ export default function SidebarWithHeader({
     </Box>
   );
 }
-
-// const handleItemClick = async(path) => {
-//   const token = localStorage.getItem('adminToken'); // Get token from local storage or wherever it's stored
-//   await axios.get(verifyAdmin, {
-//     headers: {
-//       'Authorization': `Bearer ${token}`
-//     }
-//   })
-//   .then(response => {
-//     console.log(response);
-//     if(response.status==201){
-//       console.log(response.status);
-//       <Navigate to={path}/>;
-//     }
-//   })
-//   .catch(error => {
-//     console.log('navigation',error);
-//   });
-// }
-
 
 
 const SidebarContent = ({ onClose, ...rest }) => {

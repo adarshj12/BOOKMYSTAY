@@ -6,7 +6,7 @@ const multer = require('../utils/multer');
 const Client = require('../models/clientModel');
 const cloudinary = require('../utils/cloudinary');
 const mongoose = require('mongoose');
-const imageData = require('../utils/data').city
+// const imageData = require('../utils/data').city
 
 const createHotel = async (req, res) => {
     try {
@@ -31,7 +31,7 @@ const createHotel = async (req, res) => {
         res.status(200).json(savedHotel);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
+        res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
@@ -42,7 +42,7 @@ const getClientProperties = async (req, res) => {
         res.status(200).json(list)
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
+        res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
@@ -53,7 +53,7 @@ const deleteProperty = async (req, res) => {
         res.status(200).json("hotel deleted")
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
+        res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
@@ -65,14 +65,14 @@ const getProperty = async (req, res) => {
         res.status(200).json(data);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
+        res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
 const updateProperty = async (req, res) => {
     try {
-        console.log(req.params.id);
-        console.log(req.body);
+        // console.log(req.params.id);
+        // console.log(req.body);
         const images = req.files.map((file, index) => {
             return {
                 filename: file,
@@ -86,7 +86,9 @@ const updateProperty = async (req, res) => {
                 type: req.body.type,
                 city: req.body.city,
                 address: req.body.address,
-                title: req.body.title,
+                landmark: req.body.landmark,
+                lattitude: req.body.lattitude,
+                longitude: req.body.longitude,
                 distance: req.body.distance,
                 desc: req.body.desc,
                 cheapestPrice: req.body.cheapestPrice
@@ -118,7 +120,7 @@ const updateProperty = async (req, res) => {
         res.status(200).json("hotel updated")
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
+        res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
@@ -132,7 +134,7 @@ const countByCity = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
+        res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
@@ -153,7 +155,7 @@ const countByType = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
+        res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
@@ -164,7 +166,7 @@ const getAllHotels = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
+        res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
@@ -181,7 +183,7 @@ const getDestinations = async (req, res) => {
         res.status(200).json(placesArr);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
+        res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
@@ -236,7 +238,7 @@ const getHotelRooms = async (req, res) => {
         res.status(200).json(availableRooms);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
+        res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
@@ -247,7 +249,7 @@ const getBookingDetails = async (req, res) => {
         res.status(200).json(booking)
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` });
+        res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
 
@@ -302,7 +304,7 @@ const userBookingDetail = async (req, res) => {
         res.status(200).json(detail)
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` });
+        res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
 
@@ -358,92 +360,94 @@ const getAllBookings = async (req, res) => {
         })
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` });
+        res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
 
 const rateHotel = async (req, res) => {
-    const { userId, hotelId, rating, review } = req.body
-    // try {
-    //     const hotelData = await Hotel.findById(hotelId);
-    //     const userData = await User.findById(userId);
+    const { userId, hotelId, rating, title, review } = req.body
+    try {
+        const hotelData = await Hotel.findById(hotelId);
+        const userData = await User.findById(userId);
 
-    //     if (!hotelData) {
-    //         return res.status(404).json('Hotel not found');
-    //     }
-    //     if (!userData) {
-    //         return res.status(404).json('User not found');
-    //     }
-    //     const existingRating = hotelData.ratings.find((rating) => rating.user.toString() === userId);
-    //     if (existingRating) {
-    //         existingRating.rating = rating;
-    //         existingRating.review = review;
-    //     } else {
-    //         const ratingObj = {
-    //             user: userData._id,
-    //             rating: rating,
-    //             review
-    //         };
-    //         hotelData.ratings.push(ratingObj);
-    //     }
+        if (!hotelData) {
+            return res.status(404).json('Hotel not found');
+        }
+        if (!userData) {
+            return res.status(404).json('User not found');
+        }
+        const existingRating = hotelData.ratings.find((rating) => rating.user.toString() === userId);
+        if (existingRating) {
+            existingRating.rating = rating;
+            existingRating.title = title;
+            existingRating.review = review;
+        } else {
+            const ratingObj = {
+                user: userData._id,
+                rating,
+                title,
+                review
+            };
+            hotelData.ratings.push(ratingObj);
+        }
 
-    //     await hotelData.save();
-    //     res.status(200).json('Rating added successfully');
-    // } catch (err) {
-    //     console.error('Error adding rating:', err);
-    //     res.status(500).json({ message: `Error -> ${err}` });
-    // }
-    new Promise((resolve, reject) => {
-        Hotel.findById(hotelId)
-            .then((hotelData) => {
-                User.findById(userId)
-                    .then((userData) => {
-                        if (!hotelData) {
-                            reject('Hotel not found');
-                        }
-                        if (!userData) {
-                            reject('User not found');
-                        }
+        await hotelData.save();
+        res.status(200).json('Rating added successfully');
+    } catch (err) {
+        console.error('Error adding rating:', err);
+        res.status(500).json({ message: `Error -> ${err}` });
+    }
+    // new Promise((resolve, reject) => {
+    //     Hotel.findById(hotelId)
+    //         .then((hotelData) => {
+    //             User.findById(userId)
+    //                 .then((userData) => {
+    //                     if (!hotelData) {
+    //                         reject('Hotel not found');
+    //                     }
+    //                     if (!userData) {
+    //                         reject('User not found');
+    //                     }
 
-                        const existingRating = hotelData.ratings.find(
-                            (rating) => rating.user.toString() === userId
-                        );
-                        if (existingRating) {
-                            existingRating.rating = rating;
-                            existingRating.review = review;
-                        } else {
-                            const ratingObj = {
-                                user: userData._id,
-                                rating: rating,
-                                review,
-                            };
-                            hotelData.ratings.push(ratingObj);
-                        }
+    //                     const existingRating = hotelData.ratings.find(
+    //                         (rating) => rating.user.toString() === userId
+    //                     );
+    //                     if (existingRating) {
+    //                         existingRating.rating = rating;
+    //                         existingRating.review = review;
+    //                     } else {
+    //                         const ratingObj = {
+    //                             user: userData._id,
+    //                             rating: rating,
+    //                             review,
+    //                         };
+    //                         hotelData.ratings.push(ratingObj);
+    //                     }
 
-                        hotelData
-                            .save()
-                            .then(() => {
-                                resolve('Rating added successfully');
-                            })
-                            .catch((err) => {
-                                reject(`Error saving hotel data -> ${err}`);
-                            });
-                    })
-                    .catch((err) => {
-                        reject(`Error finding user -> ${err}`);
-                    });
-            })
-            .catch((err) => {
-                reject(`Error finding hotel -> ${err}`);
-            });
-    })
-        .then((result) => {
-            res.status(200).json(result);
-        })
-        .catch((err) => {
-            console.error('Error adding rating:', err);
-            res.status(500).json({ message: `Error -> ${err}` });
-        });
+    //                     hotelData
+    //                         .save()
+    //                         .then(() => {
+    //                             resolve('Rating added successfully');
+    //                         })
+    //                         .catch((err) => {
+    //                             reject(`Error saving hotel data -> ${err}`);
+    //                         });
+    //                 })
+    //                 .catch((err) => {
+    //                     reject(`Error finding user -> ${err}`);
+    //                 });
+    //         })
+    //         .catch((err) => {
+    //             reject(`Error finding hotel -> ${err}`);
+    //         });
+    // })
+    //     .then((result) => {
+    //         res.status(200).json(result);
+    //     })
+    //     .catch((err) => {
+    //         console.error('Error adding rating:', err);
+    //         res.status(500).json({ message: `Error -> ${err}` });
+    //     });
 
 }
 
@@ -468,7 +472,7 @@ const cancelBooking = async (req, res) => {
         res.status(200).json({ message: `booking #${booking._id} canceled` });
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` });
+        res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
 
@@ -659,7 +663,7 @@ const getAllBookingsWRTDuration = async (req, res) => {
         }
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` });
+        res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
 
@@ -669,21 +673,105 @@ const topDestinations = async (req, res) => {
         const bookingData = await Book.aggregate([
             {
                 '$lookup': {
-                    'from': "hotels",
-                    'localField': "hotel",
-                    'foreignField': "_id",
-                    'as': "hotelInfo"
+                    'from': 'hotels',
+                    'localField': 'hotel',
+                    'foreignField': '_id',
+                    'as': 'hotelInfo',
+                },
+            },
+            {
+                '$group': {
+                    '_id': '$hotelInfo.city',
+                    'numberOfBookings': { '$sum': 1 },
+                },
+            },
+            {
+                '$unwind': '$_id',
+            },
+            {
+                '$lookup': {
+                    'from': 'cities',
+                    'localField': '_id',
+                    'foreignField': 'city',
+                    'as': 'cityInfo',
+                },
+            },
+            {
+                '$project': {
+                    'city': '$_id',
+                    'numberOfBookings': 1,
+                    'photo': { '$arrayElemAt': ['$cityInfo.photo', 0] },
+                    'cloudinary_id': { '$arrayElemAt': ['$cityInfo.cloudinary_id', 0] },
+                    '_id': 0,
+                },
+            },
+            {
+                '$sort': {
+                    'numberOfBookings': -1,
+                },
+            },
+        ])
+        // for (let i = 0; i < bookingData.length; i++) {
+        //     const booking = bookingData[i];
+        //     const city = booking.city[0].toLowerCase();
+        //     const cityImage = imageData.find((image) => image.city.toLowerCase() === city);
+        //     if (cityImage) {
+        //         booking.city.splice(1, 0, cityImage.url);
+        //     }
+        // }
+        if (!bookingData) return res.status(500).json('Data  not found')
+        const data = bookingData.slice(0, 3)
+        res.status(200).json(data)
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: `Error -> ${error.message}` });
+    }
+}
+
+const getHotelRating = async (req, res) => {
+    try {
+        const rating = await Hotel.aggregate([
+            {
+                '$match': { '_id': new mongoose.Types.ObjectId(req.params.id) }
+            },
+            {
+                '$project': {
+                    'rating': {
+                        '$ifNull': [
+                            { '$avg': "$ratings.rating" },
+                            0
+                        ]
+                    }
+                }
+            }
+        ])
+        res.status(200).json(rating)
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: `Error -> ${error.message}` });
+    }
+}
+
+const getRatings = async (req, res) => {
+    try {
+        const topCities = await Book.aggregate([
+            {
+                '$lookup': {
+                    'from': 'hotels',
+                    'localField': 'hotel',
+                    'foreignField': '_id',
+                    'as': 'hotelInfo'
                 }
             },
             {
                 '$group': {
-                    '_id': "$hotelInfo.city",
+                    '_id': '$hotelInfo.city',
                     'numberOfBookings': { '$sum': 1 }
                 }
             },
             {
                 '$project': {
-                    'city': "$_id",
+                    'city': '$_id',
                     'numberOfBookings': 1,
                     '_id': 0
                 }
@@ -692,26 +780,80 @@ const topDestinations = async (req, res) => {
                 '$sort': {
                     'numberOfBookings': -1
                 }
+            },
+            {
+                '$limit': 3
+            },
+            {
+                '$project': {
+                    'city': 1
+                }
+            }
+        ]);
+        const data = await Hotel.aggregate([
+            {
+                '$match': {
+                    'city': {
+                        '$in': topCities.map(c => c.city[0])
+                    }
+                }
+            },
+            {
+                '$lookup': {
+                    'from': 'users',
+                    'localField': 'ratings.user',
+                    'foreignField': '_id',
+                    'as': 'user'
+                }
+            },
+            {
+                '$project': {
+                    '_id': 0,
+                    'hotel': '$name',
+                    'city': 1,
+                    'username': '$user.username',
+                    'rating': '$ratings.rating',
+                    'title': '$ratings.title',
+                    'review': '$ratings.review'
+                }
             }
         ])
-        for (let i = 0; i < bookingData.length; i++) {
-            const booking = bookingData[i];
-            const city = booking.city[0].toLowerCase();
-            const cityImage = imageData.find((image) => image.city.toLowerCase() === city);
-            if (cityImage) {
-                booking.city.splice(1, 0, cityImage.url);
+        const result = [];
+
+        for (let i = 0; i < data.length; i++) {
+            const city = data[i].city;
+            let index = result.findIndex(obj => obj.city === city);
+
+            if (index === -1) {
+                if (data[i].username.length > 0) {
+                    result.push({
+                        city: city,
+                        username: data[i].username,
+                        title: data[i].title,
+                        review: data[i].review
+                    });
+                }
+            }
+            else {
+                if (data[i].username.length > 0) {
+                    result[index].username = result[index].username.concat(data[i].username);
+                }
+                if (data[i].title) {
+                    result[index].title = result[index].title.concat(data[i].title);
+                }
+                if (data[i].review) {
+                    result[index].review = result[index].review.concat(data[i].review);
+                }
             }
         }
-        if (!bookingData) return res.status(500).json('Data  not found')
-        const data = bookingData.slice(0, 3)
-        res.status(200).json(data)
+
+        // console.log(result);
+        res.status(200).json(result)
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` });
+        res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
-
-
 
 
 const updateRating = (req, res) => {
@@ -748,7 +890,7 @@ const updateRating = (req, res) => {
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` });
+        res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
 
@@ -769,5 +911,7 @@ module.exports = {
     rateHotel,
     cancelBooking,
     getAllBookingsWRTDuration,
-    topDestinations
+    topDestinations,
+    getRatings,
+    getHotelRating
 }

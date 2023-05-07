@@ -9,7 +9,7 @@ import { SHOW_PAYMENT_STATUS } from '../../../utils/API'
 import {PAY_CLIENT} from '../../../utils/API'
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from 'react-router-dom';
-
+import logo from '../../../../src/assets/logo.jpg'
 
 const LIMIT = 10;
 
@@ -47,16 +47,44 @@ const Main = () => {
 
     //  console.log(paymentStatus);
 
-    const handlePayment=async(id,share,payid)=>{
-        console.log(id,share);
+    const handlePayment = async (id,share,payid,clientname) => {
         const body={
             id,
             share,
             payid
         }
         await axios.put(`${PAY_CLIENT}`, body,{ headers: { 'Authorization': `Bearer ${token}` } }).then((res)=>{
-            if(res.status===200)  toast.success('payment successful');
+            // if(res.status===200)  toast.success('payment successful');
         }).catch(err=>toast.error(err.message))
+        const amount = share;
+        const { data: { key } } = await axios.get(`/getKey`)
+
+        const { data: { order } } = await axios.post(`/admin/checkout`, {
+            amount
+        })
+        const options = {
+            key: key,
+            amount: order.amount,
+            currency: "INR",
+            name: clientname,
+            description: "Booking Application",
+            image: logo,
+            order_id: order.id,
+            callback_url: `http://localhost:4000/api/v1/admin/verification`,
+            prefill: {
+                "name": "bookn'stay admin",
+                "email": 'booknstay@gmail.com',
+                "contact": `+91$9898989898`
+            },
+            notes: {
+                "address": "Razorpay Corporate Office"
+            },
+            theme: {
+                "color": "#030505"
+            }
+        };
+        const rzp1 = new window.Razorpay(options);
+        rzp1.open()
     }
 
     const data = React.useMemo(
@@ -106,7 +134,7 @@ const Main = () => {
                     ) : (
                         <Button>
                             <FaAmazonPay color={'blue'}
-                            onClick={()=>handlePayment(row.original.clientid,row.original.share,row.original.paymentid)}
+                            onClick={()=>handlePayment(row.original.clientid,row.original.share,row.original.paymentid,row.original.client)}
                             />
                         </Button>
                     );

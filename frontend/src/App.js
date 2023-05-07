@@ -13,6 +13,9 @@ import PublicRouteAdmin from './middlewares/adminPath/AdmnPublic';
 import AuthorizeUser from './middlewares/userPath/UserAuth';
 import PublicRouteUser from './middlewares/userPath/PublicPath';
 import LoaderSpinner from './pages/LoaderSpinner';
+import HomeSpinner from './pages/HomeSpinner';
+
+// ****************************************************** USER PAGES  ****************************************************** //
 
 const Register = lazy(() => import('./pages/user/Register'))
 
@@ -30,8 +33,6 @@ const List = lazy(() => import('./pages/user/List/List'))
 
 const Hotel = lazy(() => import('./pages/user/Hotel/Hotel'))
 
-const Payments = lazy(() => import('./pages/admin/Payments/Payments'))
-
 const Profile = lazy(() => import('./pages/user/Profile/ProfileHome'))
 
 const Booking = lazy(() => import('./pages/user/Booking/Booking'))
@@ -45,6 +46,8 @@ const PaymentSuccess = lazy(() => import('./pages/user/PaymentSuccess'))
 const PaymentCancel = lazy(() => import('./pages/user/PaymentCancel'))
 
 const UserChat = lazy(() => import('./pages/user/Profile/Chat'))
+
+// ****************************************************** CLIENT PAGES  ****************************************************** //
 
 const Properties = lazy(() => import('./pages/client/Properties/Properties'))
 
@@ -64,6 +67,10 @@ const AddRoom = lazy(() => import('./pages/client/Properties/AddRoom'))
 
 const ClientChat = lazy(() => import('./pages/client/Chat/Chat'))
 
+const Cancellation = lazy(()=>import('./pages/client/Cancel/Cancel'))
+
+// ****************************************************** ADMIN PAGES  ****************************************************** //
+
 const AdminViewUsers = lazy(() => import('./pages/admin/Users/Users'))
 
 const AdminViewClients = lazy(() => import('./pages/admin/Clients/Clients'))
@@ -75,6 +82,14 @@ const ViewUserDetails = lazy(() => import('./pages/admin/Users/UserDetail'))
 const AdminViewProperty = lazy(() => import('./pages/admin/Properties/SingleProperty'))
 
 const AdminViewBookings = lazy(() => import('./pages/admin/Bookings/Bookings'))
+
+const Payments = lazy(() => import('./pages/admin/Payments/Payments'))
+
+const PaymentReceipt = lazy(() => import('./pages/admin/Payments/PaymentSuccess'))
+
+const Banner = lazy(()=>import('./pages/admin/Static/Banner'))
+
+const Images = lazy(()=>import('./pages/admin/Static/Cities'))
 
 const ErrorPage = lazy(() => import('./pages/PageNotFound'))
 
@@ -126,8 +141,10 @@ function App() {
         <Route path='/'
           element={
             <PublicRouteUser>
+                <Suspense fallback={<HomeSpinner />}>
+               <Home />
 
-              <Home />
+                </Suspense>
             </PublicRouteUser>
           } />
         <Route path='/search'
@@ -356,8 +373,17 @@ function App() {
               </Suspense>
             </AuthorizeClient>
 
-          } />
+          } />        
+          <Route path='/client/cancel'
+          element={
+            <AuthorizeClient>
+              <Suspense fallback={<LoaderSpinner />}>
 
+                <Cancellation />
+              </Suspense>
+            </AuthorizeClient>
+
+          } />    
 
         {/* ADMIN */}
 
@@ -453,6 +479,38 @@ function App() {
               <Suspense fallback={<LoaderSpinner />}>
 
                 <Payments />
+              </Suspense>
+            </AuthorizeAdmin>
+
+          } />
+          <Route path='/admin/paymentsuccess'
+          element={
+            <AuthorizeAdmin>
+              <Suspense fallback={<LoaderSpinner />}>
+
+                <PaymentReceipt />
+              </Suspense>
+            </AuthorizeAdmin>
+
+          } />
+
+          <Route path='/admin/banner'
+          element={
+            <AuthorizeAdmin>
+              <Suspense fallback={<LoaderSpinner />}>
+
+                <Banner />
+              </Suspense>
+            </AuthorizeAdmin>
+
+          } />
+
+          <Route path='/admin/images'
+          element={
+            <AuthorizeAdmin>
+              <Suspense fallback={<LoaderSpinner />}>
+
+                <Images />
               </Suspense>
             </AuthorizeAdmin>
 

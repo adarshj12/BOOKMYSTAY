@@ -4,7 +4,6 @@ import NavBar from '../../../components/user/NavBar/NavBar'
 import { Box } from '@chakra-ui/react'
 import Header from '../../../components/user/Home/Header'
 import TopDestinations from '../../../components/user/Home/TopDestinations'
-import Explore from '../../../components/user/Home/Explore'
 import FeaturedProperties from '../../../components/user/Home/FeaturedItems'
 import Testimony from '../../../components/user/Home/Reviews'
 
@@ -16,7 +15,6 @@ const Home = () => {
                     <NavBar />
                     <Header/>
                     <TopDestinations/>
-                    {/* <Explore/> */}
                     {/* <FeaturedProperties/> */}
                     <Testimony/>
                 </Box>

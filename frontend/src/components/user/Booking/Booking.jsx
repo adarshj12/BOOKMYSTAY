@@ -1,5 +1,24 @@
 import React, { useState, useEffect } from 'react'
-import { AspectRatio, Button, Center, Container, Badge, Box, Radio, RadioGroup, Divider, Flex, GridItem, Heading, HStack, Image, SimpleGrid, Stack, Text, VStack } from '@chakra-ui/react';
+import {
+    AspectRatio,
+    Button,
+    Center,
+    Container,
+    Badge, 
+    Box, 
+    Radio, 
+    RadioGroup, 
+    Divider, 
+    Flex, 
+    GridItem, 
+    Heading, 
+    HStack, 
+    Image, 
+    SimpleGrid, 
+    Stack, 
+    Text, 
+    VStack
+} from '@chakra-ui/react';
 import razorpay from '../../../../src/assets/razorpay.jpeg'
 import paypal from '../../../../src/assets/paypal.jpeg'
 import stripe from '../../../../src/assets/stripe.jpeg'
@@ -10,7 +29,7 @@ import { STRIPE_BOOK } from '../../../utils/API'
 import { GET_DETAIL_USER } from '../../../utils/API'
 import logo from '../../../assets/booknstay_razorpay.jpg'
 import jwtDecode from 'jwt-decode';
-import { ThreeDots } from 'react-loader-spinner';
+import HomeSpinner from '../../../pages/HomeSpinner'
 
 
 const Booking = () => {
@@ -27,9 +46,10 @@ const Booking = () => {
     const [dateRange, setdateRange] = useState(location.state.dateRange);
     const [count, setCount] = useState(location.state.count)
     const [room, setRoom] = useState(location.state.room)
-    const [rate,setRate] = useState(location.state.rate)
+    const [rate, setRate] = useState(location.state.rate)
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('2');
     const [user, setUser] = useState('')
+    const [loading, setLoading] = useState(false)
     const decode = jwtDecode(localStorage.getItem('userToken'));
     const token = localStorage.getItem('userToken');
     const userId = decode.id
@@ -46,9 +66,10 @@ const Booking = () => {
     }, [user])
 
     const reserve = async () => {
+        setLoading(true)
         const amount = location.state.rate;
         const body = {
-            hotelid, roomid, dateRange, count, room ,userId,rate
+            hotelid, roomid, dateRange, count, room, userId, rate
         }
         // console.log(window)
         await axios.post(BOOK, body, { headers: { "Content-Type": "application/json" } }).then(res => console.log(res.data))
@@ -70,8 +91,8 @@ const Booking = () => {
             callback_url: `http://localhost:4000/api/v1/users/verification`,
 
             prefill: {
-                "name": user?.username, 
-                "email":user?.email,
+                "name": user?.username,
+                "email": user?.email,
                 "contact": `+91${user?.mobile}`
             },
             notes: {
@@ -86,8 +107,9 @@ const Booking = () => {
     }
 
     const stripe_reserve = async () => {
+        setLoading(true)
         const body = {
-            hotelid, roomid, dateRange, count, room ,userId,rate
+            hotelid, roomid, dateRange, count, room, userId, rate
         }
         // console.log(window)
         await axios.post(BOOK, body, { headers: { "Content-Type": "application/json" } }).then(res => console.log(res.data))
@@ -120,137 +142,144 @@ const Booking = () => {
 
     return (
 
-        <Container maxWidth='container.xl' padding='5'>
-            <Flex h={'100vh'} py={20}>
-                <VStack
-                    w={'full'}
-                    p={5}
-                    spacing={10}
-                    align={'flex-start'}
-                >
-                    <VStack spacing={2} align={'flex-start'}>
-                        <Heading>
-                            Guest Details
-                        </Heading>
-                        <Text>Review your Booking</Text>
-                    </VStack>
-                    <SimpleGrid columns={2} columnGap={3} rowGap={5}>
-                        <GridItem colSpan={1}>
-                            <HStack><Text fontWeight={'bold'}>Name</Text>
-                                <Text>{user?.username}</Text></HStack>
-                        </GridItem>
-                        <GridItem colSpan={1}>
-                            <HStack><Text fontWeight={'bold'}>Ph. Number</Text>
-                                <Text>+91{user?.mobile}</Text></HStack>
-                        </GridItem>
-                        <GridItem colSpan={2}>
-                            <HStack><Text fontWeight={'bold'}>Email</Text>
-                                <Text>{user?.email}</Text></HStack>
-                        </GridItem>
-                        <GridItem mt={5} colSpan={2}>
-                            <Flex >
-                                <RadioGroup defaultValue='2' onChange={value => setSelectedPaymentMethod(value)}>
-                                    <Stack spacing={40} direction='row'>
-                                        <Radio colorScheme='blue' value='1'>
-                                            <Image h={30} w={100} src={razorpay} />
-                                        </Radio>
-                                        <Radio colorScheme='blue' value='2'>
-                                            <Image h={50} w={100} src={stripe} />
-                                        </Radio>
-                                    </Stack>
-                                </RadioGroup>
-
-                            </Flex>
-                        </GridItem>
-
-                        <GridItem mt={5} colSpan={2}>
-                            <Button
+        <>
+            {
+                loading ?
+                    <HomeSpinner />
+                    :
+                    <Container maxWidth='container.xl' padding='5'>
+                        <Flex h={'100vh'} py={20}>
+                            <VStack
                                 w={'full'}
-                                rounded={'none'}
-                                mt={3}
-                                size={'lg'}
-                                colorScheme="teal"
-                                bgGradient="linear(to-r, teal.400, teal.500, teal.600)"
-                                color="white"
-                                variant="solid"
-                                onClick={() => handlePayment()}
+                                p={5}
+                                spacing={10}
+                                align={'flex-start'}
                             >
-                                Reserve
-                            </Button>
-                        </GridItem>
+                                <VStack spacing={2} align={'flex-start'}>
+                                    <Heading>
+                                        Guest Details
+                                    </Heading>
+                                    <Text>Review your Booking</Text>
+                                </VStack>
+                                <SimpleGrid columns={2} columnGap={3} rowGap={5}>
+                                    <GridItem colSpan={1}>
+                                        <HStack><Text fontWeight={'bold'}>Name</Text>
+                                            <Text>{user?.username}</Text></HStack>
+                                    </GridItem>
+                                    <GridItem colSpan={1}>
+                                        <HStack><Text fontWeight={'bold'}>Ph. Number</Text>
+                                            <Text>+91{user?.mobile}</Text></HStack>
+                                    </GridItem>
+                                    <GridItem colSpan={2}>
+                                        <HStack><Text fontWeight={'bold'}>Email</Text>
+                                            <Text>{user?.email}</Text></HStack>
+                                    </GridItem>
+                                    <GridItem mt={5} colSpan={2}>
+                                        <Flex >
+                                            <RadioGroup defaultValue='2' onChange={value => setSelectedPaymentMethod(value)}>
+                                                <Stack spacing={40} direction='row'>
+                                                    <Radio colorScheme='blue' value='1'>
+                                                        <Image h={30} w={100} src={razorpay} />
+                                                    </Radio>
+                                                    <Radio colorScheme='blue' value='2'>
+                                                        <Image h={50} w={100} src={stripe} />
+                                                    </Radio>
+                                                </Stack>
+                                            </RadioGroup>
 
-                    </SimpleGrid>
+                                        </Flex>
+                                    </GridItem>
+
+                                    <GridItem mt={5} colSpan={2}>
+                                        <Button
+                                            w={'full'}
+                                            rounded={'none'}
+                                            mt={3}
+                                            size={'lg'}
+                                            colorScheme="teal"
+                                            bgGradient="linear(to-r, teal.400, teal.500, teal.600)"
+                                            color="white"
+                                            variant="solid"
+                                            onClick={() => handlePayment()}
+                                        >
+                                            Reserve
+                                        </Button>
+                                    </GridItem>
+
+                                </SimpleGrid>
 
 
-                </VStack>
+                            </VStack>
 
-                <VStack
-                    bg={'gray.100'}
-                    w={'full'}
-                    p={5}
-                    spacing={10}
-                    align={'flex-start'}
-                >
-                    <VStack spacing={2} align={'flex-start'}>
-                        <Heading>
-                            {location.state.hotel}
-                        </Heading>
-                        <Text>{location.state.address}</Text>
-                    </VStack>
-                    <HStack spacing={4} alignItems={'center'} w={'full'}>
-                        <AspectRatio ratio={1} w={150} h={150}>
-                            <Image src={location.state.photo} />
-                        </AspectRatio>
-                        <VStack>
-
-                            <Heading size={'md'} color={'gray.600'}>{location.state.room} ({location.state.count} rooms) </Heading>
-                            <HStack  >
-                                <Box width="40%" >
+                            <VStack
+                                bg={'gray.100'}
+                                w={'full'}
+                                p={5}
+                                spacing={10}
+                                align={'flex-start'}
+                            >
+                                <VStack spacing={2} align={'flex-start'}>
+                                    <Heading>
+                                        {location.state.hotel}
+                                    </Heading>
+                                    <Text>{location.state.address}</Text>
+                                </VStack>
+                                <HStack spacing={4} alignItems={'center'} w={'full'}>
+                                    <AspectRatio ratio={1} w={150} h={150}>
+                                        <Image src={location.state.photo} />
+                                    </AspectRatio>
                                     <VStack>
-                                        <Text color={'gray.400'}>CHECK IN</Text>
-                                        <Text fontWeight={'bold'}>{checkIn.toString().slice(4, 15)}</Text>
-                                        <Text color={'gray.400'}>{dayOfWeek1} 12 PM</Text>
+
+                                        <Heading size={'md'} color={'gray.600'}>{location.state.room} ({location.state.count} rooms) </Heading>
+                                        <HStack  >
+                                            <Box width="40%" >
+                                                <VStack>
+                                                    <Text color={'gray.400'}>CHECK IN</Text>
+                                                    <Text fontWeight={'bold'}>{checkIn.toString().slice(4, 15)}</Text>
+                                                    <Text color={'gray.400'}>{dayOfWeek1} 12 PM</Text>
+                                                </VStack>
+                                            </Box>
+                                            <Center height='100px'  >
+                                                <Divider orientation='vertical' />
+                                            </Center>
+                                            <Box width="20%" >
+                                                <Badge colorScheme='purple' >{location.state.days} NIGHTS</Badge>
+
+
+                                            </Box>
+                                            <Center height='100px'  >
+                                                <Divider orientation='vertical' />
+                                            </Center>
+                                            <Box width="40%" >
+                                                <VStack>
+                                                    <Text color={'gray.400'}>CHECK OUT</Text>
+                                                    <Text fontWeight={'bold'}>{checkOut.toString().slice(4, 15)}</Text>
+                                                    <Text color={'gray.400'}>{dayOfWeek2} 11 AM</Text>
+                                                </VStack>
+                                            </Box>
+                                        </HStack>
                                     </VStack>
-                                </Box>
-                                <Center height='100px'  >
-                                    <Divider orientation='vertical' />
-                                </Center>
-                                <Box width="20%" >
-                                    <Badge colorScheme='purple' >{location.state.days} NIGHTS</Badge>
 
 
-                                </Box>
-                                <Center height='100px'  >
-                                    <Divider orientation='vertical' />
-                                </Center>
-                                <Box width="40%" >
-                                    <VStack>
-                                        <Text color={'gray.400'}>CHECK OUT</Text>
-                                        <Text fontWeight={'bold'}>{checkOut.toString().slice(4, 15)}</Text>
-                                        <Text color={'gray.400'}>{dayOfWeek2} 11 AM</Text>
-                                    </VStack>
-                                </Box>
-                            </HStack>
-                        </VStack>
+                                </HStack>
+                                <HStack p={20} style={{ flex: 1 }}>
+                                    <Text fontWeight={'bold'} style={{ textAlign: 'center', flex: 1 }}
 
+                                    >
+                                        Total Amount to be paid
+                                    </Text>
+                                    <Heading fontWeight={'bold'} style={{ textAlign: 'center', flex: 1 }}>
+                                        ₹ {location.state.rate}
+                                    </Heading>
+                                </HStack>
 
-                    </HStack>
-                    <HStack p={20} style={{ flex: 1 }}>
-                        <Text fontWeight={'bold'} style={{ textAlign: 'center', flex: 1 }}
+                            </VStack>
 
-                        >
-                            Total Amount to be paid
-                        </Text>
-                        <Heading fontWeight={'bold'} style={{ textAlign: 'center', flex: 1 }}>
-                            ₹ {location.state.rate}
-                        </Heading>
-                    </HStack>
+                        </Flex>
 
-                </VStack>
-
-            </Flex>
-
-        </Container>
+                    </Container>
+            }
+        </>
     )
 }
 

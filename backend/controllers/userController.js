@@ -3,7 +3,9 @@ const Book = require('../models/bookingModel')
 const Room = require('../models/roomModel');
 const { instance } = require("../utils/razorpay");
 const Hotel = require('../models/hotelModel')
-const Payment = require('../models/paymentModel')
+const Payment = require('../models/paymentModel');
+const Banner = require('../models/bannerModel');
+const City = require('../models/cityModel')
 const crypto = require("crypto");
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt');
@@ -30,7 +32,7 @@ const register = async (req, res) => {
         res.status(201).json({ message: `user registered` })
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
+        res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
@@ -47,7 +49,7 @@ const login = async (req, res) => {
             .json({ message: 'login successful', token })
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
+        res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
@@ -61,7 +63,7 @@ const getOTP = async (req, res) => {
         res.status(203).json({ message: "mobile no. mismatch" })
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
+        res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
@@ -88,7 +90,7 @@ const googleAuth = async (req, res) => {
         }
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
+        res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
@@ -102,7 +104,7 @@ const mobileUpdate = async (req, res) => {
         res.status(200).json({ message: 'mobile updated', user })
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
+        res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
@@ -113,7 +115,7 @@ const getUserDetail = async (req, res) => {
         res.status(200).json(user);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
+        res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
@@ -123,7 +125,7 @@ const deleteuser = async (req, res) => {
         res.status(200).json("user deleted");
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` });
+        res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
 
@@ -137,7 +139,7 @@ const updateUser = async (req, res) => {
         res.status(200).json('user updated');
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` });
+        res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
 
@@ -177,7 +179,7 @@ const updateUser = async (req, res) => {
 //         res.status(201).json('booking successful');
 //     } catch (error) {
 //         console.log(error);
-//         res.status(500).json({ message: `Error -> ${error}` });
+//         res.status(500).json({ message: `Error -> ${error.message}` });
 //     }
 // }
 
@@ -284,7 +286,7 @@ const createBooking = async (hotelId, roomTitle, dateRange, count, user, payment
         console.log('booking successful');
     } catch (error) {
         console.log(error);
-        throw new Error(`Error -> ${error}`);
+        throw new Error(`Error -> ${error.message}`);
     }
 };
 
@@ -300,7 +302,7 @@ const createBooking = async (hotelId, roomTitle, dateRange, count, user, payment
 //         res.status(201).json({ success: true })
 //     } catch (error) {
 //         console.log(error);
-//         res.status(500).json({ message: `Error -> ${error}` });
+//         res.status(500).json({ message: `Error -> ${error.message}` });
 //     }
 // }
 
@@ -320,7 +322,7 @@ const bookingDetails = async(req, res) => {
         res.status(201).json({ success: true })
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` });
+        res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
 
@@ -435,7 +437,7 @@ const getMyBookings = async (req, res) => {
         res.status(200).json(data)
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` });
+        res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
 
@@ -509,7 +511,28 @@ const getMyBookng = async (req, res) => {
         res.status(200).json(data[0])
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` });
+        res.status(500).json({ message: `Error -> ${error.message}` });
+    }
+}
+
+const banner = async(req,res)=>{
+    try {
+        const banner = await Banner.findOne()
+        res.status(200).json(banner)
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: `Error -> ${error.message}` });
+    }
+}
+
+const cities = async(req,res)=>{
+    try {
+        const cities = await City.find();
+        if(!cities) return res.status(203).json('no cities found');
+        res.status(200).json(cities)
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
 
@@ -528,5 +551,7 @@ module.exports = {
     getMyBookings,
     googleAuth,
     mobileUpdate,
-    getMyBookng
+    getMyBookng,
+    banner,
+    cities
 }

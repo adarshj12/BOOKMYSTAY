@@ -20,6 +20,9 @@ const ReviewSchema = new mongoose.Schema({
         min: 0,
         max: 5,
     },
+    title: {
+        type: String
+    },
     review: {
         type: String
     }
@@ -50,8 +53,16 @@ const HotelSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    title: {
+    landmark: {
         type: String,
+        required: true
+    },
+    lattitude: {
+        type: Number,
+        required: true
+    },
+    longitude: {
+        type: Number,
         required: true
     },
     photos: {

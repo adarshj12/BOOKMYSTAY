@@ -13,7 +13,9 @@ const {
     getMyBookings, 
     googleAuth, 
     mobileUpdate, 
-    getMyBookng 
+    getMyBookng, 
+    banner,
+    cities
 } = require('../controllers/userController');
 const { verifyUser } = require('../utils/verifyToken');
 const { cancelBooking } = require('../controllers/hotelController');
@@ -51,7 +53,11 @@ router.post('/googleAuth',googleAuth)
 
 router.put('/mobileupdate/:id',verifyUser,mobileUpdate);
 
-router.get('/cancel/:id',verifyUser,cancelBooking)
+router.get('/cancel/:id',verifyUser,cancelBooking);
+
+router.get('/banner',banner);
+
+router.get('/cities',cities)
 
 
 module.exports=router;

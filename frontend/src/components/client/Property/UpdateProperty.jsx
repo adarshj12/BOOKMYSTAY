@@ -37,6 +37,9 @@ const UpdateProperty = () => {
   const [title, setTitle] = useState('')
   const [desc, setDesc] = useState('')
   const [cheapestPrice, setCheapestPrice] = useState(0)
+  const [landmark, setLandmark] = useState('')
+  const [lat, setLat] = useState(0)
+  const [long, setLong] = useState(0)
   const [loading, setLoading] = useState(false);
   const getDetails = async () => {
     await axios.get(`${gethotel}/${location.state.data}`).then((res) => {
@@ -47,7 +50,9 @@ const UpdateProperty = () => {
         setCity(res.data.city);
         setAddress(res.data.address);
         setDistance(res.data.distance);
-        setTitle(res.data.title);
+        setLandmark(res.data.landmark);
+        setLat(res.data.lattitude);
+        setLong(res.data.longitude);
         setDesc(res.data.desc);
         setCheapestPrice(res.data.cheapestPrice);
       } else {
@@ -91,7 +96,9 @@ const UpdateProperty = () => {
     formData.append("city", city);
     formData.append("address", address)
     formData.append("distance", distance)
-    formData.append("title", title)
+    formData.append("landmark", landmark);
+    formData.append("lattitude", lat);
+    formData.append("longitude", long);
     formData.append("desc", desc)
     formData.append("cheapestPrice", cheapestPrice)
     const token = localStorage.getItem('clientToken');
@@ -155,9 +162,9 @@ const UpdateProperty = () => {
             <Heading lineHeight={1.1} fontSize={{ base: '2xl', sm: '3xl' }}>
               Edit Property
             </Heading>
-           <Center>
-           <Button onClick={()=>navigate('/client/addroom',{state:{id:location.state.data,name:hotel?.name}})}>Add Rooms</Button>
-           </Center>
+            <Center>
+              <Button onClick={() => navigate('/client/addroom', { state: { id: location.state.data, name: hotel?.name } })}>Add Rooms</Button>
+            </Center>
             <FormControl id="userName">
               <FormLabel>Images</FormLabel>
               <Stack ml={20} direction={['column', 'row']} spacing={6}>
@@ -213,8 +220,16 @@ const UpdateProperty = () => {
                 <Input defaultValue={hotel?.address} onChange={(e) => setAddress(e.target.value)} />
               </HStack>
               <HStack>
-                <Text fontWeight={500}>Title</Text>
-                <Input defaultValue={hotel?.title} onChange={(e) => setTitle(e.target.value)} />
+                <Text fontWeight={500}>LandMark</Text>
+                <Input defaultValue={hotel?.landmark} onChange={(e) => setLandmark(e.target.value)} />
+              </HStack>
+              <HStack>
+                <Text fontWeight={500}>Latitude</Text>
+                <Input defaultValue={hotel?.lattitude} onChange={(e) => setLat(e.target.value)} />
+              </HStack>
+              <HStack>
+                <Text fontWeight={500}>Longitude</Text>
+                <Input defaultValue={hotel?.longitude} onChange={(e) => setLong(e.target.value)} />
               </HStack>
               <HStack>
                 <Text fontWeight={500}> Description</Text>

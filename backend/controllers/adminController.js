@@ -6,8 +6,13 @@ const User = require('../models/usersModel');
 const Client = require('../models/clientModel');
 const Hotel = require('../models/hotelModel');
 const Payment = require('../models/paymentModel');
-const Book = require('../models/bookingModel')
-
+const Book = require('../models/bookingModel');
+const Banner = require('../models/bannerModel');
+const { instance } = require("../utils/razorpay");
+const crypto = require("crypto");
+const City = require('../models/cityModel')
+const cloudinary = require('../utils/cloudinary');
+const multer = require('../utils/multer');
 const login = async (req, res) => {
     try {
         // console.log('hi');
@@ -17,7 +22,7 @@ const login = async (req, res) => {
         res.status(202).json({ message: 'login successful', token })
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
+        res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
@@ -32,7 +37,7 @@ const getAllUsers = async (req, res) => {
         }
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ message: `Error -> ${error}` });
+        return res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
 
@@ -45,7 +50,7 @@ const getAllClients = async (req, res) => {
         res.status(404).json({ message: 'clients not found' })
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
+        res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
@@ -55,7 +60,7 @@ const blockClient = async (req, res) => {
         res.status(200).json("status updated")
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
+        res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
@@ -65,7 +70,7 @@ const verifyClient = async (req, res) => {
         res.status(200).json("status updated")
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
+        res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
@@ -75,7 +80,7 @@ const blockUsers = async (req, res) => {
         res.status(200).json("status updated")
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
+        res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
@@ -107,7 +112,7 @@ const getAllProperties = async (req, res) => {
         res.status(200).json(hotels)
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
+        res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
@@ -153,31 +158,11 @@ const payments = async (req, res) => {
         })
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
+        res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
-const payclient = async (req, res) => {
-    try {
-        // console.log(req.body)
-        const share = req.body.share
-        const client = await Client.findById(req.body.id)
-        await Client.findByIdAndUpdate(req.body.id, {
-            $set: {
-                earnings: client.earnings + share
-            }
-        })
-        await Payment.findByIdAndUpdate(req.body.payid, {
-            $set: {
-                status: 'paid'
-            }
-        })
-        res.status(200).json('payment successful')
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` })
-    }
-}
+
 
 const dashboard = async (req, res) => {
     try {
@@ -205,10 +190,10 @@ const dashboard = async (req, res) => {
             {
                 $group: {
                     _id: {
-                        $month: '$booking_date' // Group by month of booking_date
+                        $month: '$booking_date'
                     },
                     revenue: {
-                        $sum: '$rate' // Sum the rate for each group
+                        $sum: '$rate'
                     }
                 }
             },
@@ -221,16 +206,153 @@ const dashboard = async (req, res) => {
             },
             {
                 $sort: {
-                    month: 1 // Sort by month in ascending order
+                    month: 1
                 }
             }
         ])
-        res.json({ payment, revenue,users,properties,total })
+        res.json({ payment, revenue, users, properties, total })
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Error -> ${error}` });
+        res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
+
+const addBanner = async (req, res) => {
+    try {
+        console.log(req.file);
+        const result = await cloudinary.uploader.upload(req.file.path, { resource_type: 'video' }); 
+        let banner = new Banner({
+          video: result.secure_url,
+          cloudinary_id: result.public_id,
+        });
+        await banner.save();
+        res.status(201).json(`banner added with url ${result.secure_url}`);
+      } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: `Error -> ${error.message}` });
+      }
+}
+
+const updateBanner = async (req, res) => {
+    try {
+        let banner = await Banner.findById(req.params.id);
+        await cloudinary.uploader.destroy(banner.cloudinary_id,{ resource_type: 'video' });
+        const result = await cloudinary.uploader.upload(req.file.path, { resource_type: 'video' });
+        const data = {
+            video: result.secure_url || banner.video,
+            cloudinary_id: result.public_id || banner.cloudinary_id
+        }
+        banner = await Banner.findByIdAndUpdate(req.params.id, data, { new: true })
+        res.status(201).json(`banner updaated with url ${result.secure_url}`)
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: `Error -> ${error.message}` });
+    }
+}
+
+const addCityImage=async(req,res)=>{
+    try {
+        const data = await City.findOne({city:req.body.city})
+        if(data) return res.status(403).json('city already exist')
+        const result = await cloudinary.uploader.upload(req.file.path);
+        let citymage = new City({
+            city:req.body.city,
+            photo: result.secure_url,
+            cloudinary_id:result.public_id
+        });
+        await citymage.save();
+        res.status(201).json(`city image added ${result.secure_url}`)
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: `Error -> ${error.message}` });
+    }
+}
+
+// const payclient = async (req, res) => {
+//     try {
+//         // console.log(req.body)
+//         const share = req.body.share
+//         const client = await Client.findById(req.body.id)
+//         await Client.findByIdAndUpdate(req.body.id, {
+//             $set: {
+//                 earnings: client.earnings + share
+//             }
+//         })
+//         await Payment.findByIdAndUpdate(req.body.payid, {
+//             $set: {
+//                 status: 'paid'
+//             }
+//         })
+//         res.status(200).json('payment successful')
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).json({ message: `Error -> ${error.message}` })
+//     }
+// }
+
+const PAYMENT_DATA={}
+
+const paytoClientDetails = async(req, res) => {
+    try {
+        PAYMENT_DATA.id = req.body.id;
+        PAYMENT_DATA.share = req.body.share;
+        PAYMENT_DATA.payid = req.body.payid;
+        res.status(200).json({ success: true })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: `Error -> ${error.message}` });
+    }
+}
+
+const payclient = async (id,share,payid) => {
+    try {
+        const amount = share
+        const client = await Client.findById(id)
+        await Client.findByIdAndUpdate(id, {
+            $set: {
+                earnings: client.earnings + amount
+            }
+        })
+        await Payment.findByIdAndUpdate(payid, {
+            $set: {
+                status: 'paid'
+            }
+        })
+        console.log('payment successful');
+    } catch (error) {
+        console.log(error);
+        throw new Error(`Error -> ${error.message}`);
+    }
+}
+
+const checkout = async (req, res) => {
+    var options = {
+        amount: Number(req.body.amount * 100),
+        currency: "INR"
+    };
+    const order = await instance.orders.create(options)
+    console.log(order);
+    res.status(200).json({ success: true, order })
+}
+
+const verification = async (req, res) => {
+
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+    const body = razorpay_order_id + "|" + razorpay_payment_id;
+    const expectedSignature = crypto.createHmac('sha256', process.env.RAZORPAY_API_SECRET)
+        .update(body.toString())
+        .digest('hex');
+    console.log("sig received ", razorpay_signature);
+    console.log("sig generated ", expectedSignature);
+    const isAuthentic = expectedSignature === razorpay_signature;
+
+    if (isAuthentic) {
+        await payclient(PAYMENT_DATA.id,PAYMENT_DATA.share,PAYMENT_DATA.payid);
+        res.redirect(`http://localhost:3000/admin/paymentsuccess?reference=${razorpay_payment_id}`)
+    } else {
+        res.status(400).json({ success: false })
+    }
+};
 
 module.exports = {
     login,
@@ -242,5 +364,11 @@ module.exports = {
     getAllProperties,
     payments,
     payclient,
-    dashboard
+    dashboard,
+    addBanner,
+    updateBanner,
+    addCityImage,
+    paytoClientDetails,
+    checkout,
+    verification
 }

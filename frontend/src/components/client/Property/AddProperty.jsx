@@ -27,18 +27,23 @@ const AddNewProperty = () => {
     const [city, setCity] = useState('')
     const [address, setAddress] = useState('')
     const [distance, setDistance] = useState('')
-    const [title, setTitle] = useState('')
     const [desc, setDesc] = useState('')
     const [cheapestPrice, setCheapestPrice] = useState('')
+    const [landmark,setLandmark] = useState('')
+    const [lat,setLat] = useState(0)
+    const [long,setLong] = useState(0)
+
 
     const [nameError, setNameError] = useState(false);
     const [typeError, settypeError] = useState(false)
     const [cityError, setCityError] = useState(false)
     const [addressError, setAddressError] = useState(false)
     const [distanceError, setDistanceError] = useState(false)
-    const [titleError, setTitleError] = useState(false);
     const [descError, setDescError] = useState(false)
     const [cheapestError, setCheapestError] = useState(false)
+    const [landmarkErr,setLandmarkErr] = useState(false)
+    const [latErr,setLatErr] = useState(false)
+    const [longErr,setLongErr] = useState(false)
     const [imageErr,setImageErr] = useState(false)
 
 
@@ -46,7 +51,7 @@ const AddNewProperty = () => {
     const navigate = useNavigate()
 
     const handleNameChange = (value) => {
-        if (!value.match(/^[a-zA-Z ]{3,10}$/)) {
+        if (!value.match(/^[a-zA-Z ]{3,30}$/)) {
             setNameError(true)
         } else {
             setNameError(false)
@@ -64,7 +69,7 @@ const AddNewProperty = () => {
     }
 
     const handleCityChange = (value) => {
-        if (!value.match(/^[a-zA-Z ]{3,10}$/)) {
+        if (!value.match(/^[a-zA-Z ]{3,25}$/)) {
             setCityError(true)
         } else {
             setCityError(false)
@@ -72,8 +77,35 @@ const AddNewProperty = () => {
         }
     }
 
+    const handleLandmarkChange = (value) => {
+        if (!value.match(/^[a-zA-Z ]{5,30}$/)) {
+            setLandmarkErr(true)
+        } else {
+            setLandmarkErr(false)
+            setLandmark(value);
+        }
+    }
+
+    const handleLattitudeChange = (value) => {
+        if (!value.match(/\.\d+/g)) {
+            setLatErr(true)
+        } else {
+            setLatErr(false)
+            setLat(value);
+        }
+    }
+
+    const handleLongitudeChange = (value) => {
+        if (!value.match(/\.\d+/g)) {
+            setLongErr(true)
+        } else {
+            setLongErr(false)
+            setLong(value);
+        }
+    }
+
     const handleAddressChange = (value) => {
-        if (!value.match(/^[a-zA-Z ]{10,40}$/)) {
+        if (!value.match(/^.{10,150}$/)) {
             setAddressError(true)
         } else {
             setAddressError(false)
@@ -90,14 +122,6 @@ const AddNewProperty = () => {
         }
     }
 
-    const handleTitleChange = (value) => {
-        if (!value.match(/^[a-zA-Z ]{3,30}$/)) {
-            setTitleError(true)
-        } else {
-            setTitleError(false)
-            setTitle(value);
-        }
-    }
 
     const handleDescChange = (value) => {
         if (!value.match(/^.{10,1500}$/)) {
@@ -121,19 +145,19 @@ const AddNewProperty = () => {
         e.preventDefault();
         
         
-        if (nameError || typeError || cityError || addressError || distanceError || titleError || descError || cheapestError ||imageErr||
-            name === "" || type === '' || city === '' || address === '' || distance === '' || title === '' || desc === '' || cheapestPrice === '') {
+        if (nameError || typeError || cityError || addressError || distanceError ||landmarkErr ||latErr||longErr|| descError || cheapestError ||imageErr||
+            name === "" || type === '' ||landmark===''|| city === '' ||lat===''||long===''|| address === '' || distance === ''  || desc === '' || cheapestPrice === '') {
             toast.error('form not complete')
         } else {
-            console.log('hello');
-            console.log('hello2');
             const formData = new FormData();
             formData.append("name", name);
             formData.append("type", type);
             formData.append("city", city);
+            formData.append("landmark", landmark);
+            formData.append("lattitude", lat);
+            formData.append("longitude", long);
             formData.append("address", address)
             formData.append("distance", distance)
-            formData.append("title", title)
             formData.append("desc", desc)
             formData.append("cheapestPrice", cheapestPrice)
             for (let i = 0; i < image?.length; i++) {
@@ -204,6 +228,30 @@ const AddNewProperty = () => {
                                         <VStack>
 
                                             <HStack>
+                                                <Text fontWeight={500}>Nearest Landmark</Text>
+                                                <Input placeholder="Enter Landmark" onChange={(e) => handleLandmarkChange(e.target.value)} />
+                                            </HStack>
+                                            {landmarkErr && <Text color={'red'} fontWeight={100}>Enter a Landmark</Text>}
+                                        </VStack>
+                                        <VStack>
+
+                                            <HStack>
+                                                <Text fontWeight={500}>Enter Lattitude</Text>
+                                                <Input placeholder="Enter Lattitude" onChange={(e) => handleLattitudeChange(e.target.value)} />
+                                            </HStack>
+                                            {latErr && <Text color={'red'} fontWeight={100}>Enter Lattitude</Text>}
+                                        </VStack>
+                                        <VStack>
+
+                                            <HStack>
+                                                <Text fontWeight={500}>Enter Longitude</Text>
+                                                <Input placeholder="Enter Longitude" onChange={(e) => handleLongitudeChange(e.target.value)} />
+                                            </HStack>
+                                            {longErr && <Text color={'red'} fontWeight={100}>Enter Longitude</Text>}
+                                        </VStack>
+                                        <VStack>
+
+                                            <HStack>
                                                 <Text fontWeight={500}>City</Text>
                                                 <Input placeholder="Enter city" onChange={(e) => handleCityChange(e.target.value)} />
                                             </HStack>
@@ -217,14 +265,7 @@ const AddNewProperty = () => {
                                             </HStack>
                                             {addressError && <Text color={'red'} fontWeight={100}>Address should not be less than 10 characters and should not contain any symbols</Text>}
                                         </VStack>
-                                        <VStack>
-
-                                            <HStack>
-                                                <Text fontWeight={500}>Title</Text>
-                                                <Input placeholder="Enter title" onChange={(e) => handleTitleChange(e.target.value)} />
-                                            </HStack>
-                                            {titleError && <Text color={'red'} fontWeight={100}>Enter a decent property title</Text>}
-                                        </VStack>
+                                        
                                         <VStack>
 
                                             <HStack>

@@ -42,7 +42,7 @@ const login = async (req, res) => {
     if (!isMatch) return res.status(403).json({ message: 'invalid email or password' });
     if (user.isBlocked) return res.status(203).json({ blocked: true });
     const token = jwt.sign({ id: user._id, name: user.username, client: true }, process.env.SECRET);
-    console.log(token);
+    // console.log(token);
     res.status(202)
       .json({ message: 'login successful', token })
   } catch (error) {
@@ -212,7 +212,6 @@ const changeBookingStatus = async (req, res) => {
 
 const cancelledBookings = async (req, res) => {
   try {
-    console.log(req.query.id);
     const details = await Hotel.aggregate([
       {
         '$match': {
@@ -263,8 +262,8 @@ const cancelledBookings = async (req, res) => {
         }
       }
     ])
-    if (details.length===0) return res.status(400).json('no cancellations');
-    res.status(400).json(details);
+    if (details.length===0) return res.status(203).json('no cancellations');
+    res.status(200).json(details);
   } catch (error) {
 
   }
