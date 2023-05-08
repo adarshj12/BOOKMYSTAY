@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import axios from '../../../utils/axios'
-import { GET_MY_BOOKING } from '../../../utils/API';
+import { GET_MY_BOOKING,START_CONVERSATION,GET_CONVERSATIONS } from '../../../utils/API';
 import toast, { Toaster } from "react-hot-toast";
 import { BsArrowLeftRight, BsFillPersonFill } from 'react-icons/bs'
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -30,7 +30,7 @@ const Booking = () => {
 
     const getData = async () => {
         await axios.get(`${GET_MY_BOOKING}/${location.state}`, { headers: { 'Authorization': `Bearer ${token}` } }).then((res) => {
-            console.log(res.data)
+            // console.log(res.data)
             setBooking(res.data);
         }).catch(err => toast.error(err.message))
     }
@@ -47,19 +47,35 @@ const Booking = () => {
             let checkoutDate = new Date(checkout);
 
             if (checkinDate > currentDate) {
-                console.log("The check-in date is later than today's date");
+                // console.log("The check-in date is later than today's date");
                 setCancel(true);
             }
 
             if (checkoutDate < currentDate) {
-                console.log("The check-out date is earlier than today's date");
+                // console.log("The check-out date is earlier than today's date");
                 setReview(true);
             }
             if (booking.status === 'canceled') setStatus(true)
         }
     }, [booking]);
 
-
+    const chat =async(clientid)=>{
+        console.log(booking?.user?._id,clientid);
+        await axios.get(`${GET_CONVERSATIONS}/${booking?.user?._id}`).then(async(res)=>{
+            console.log(res.data)
+            if(res.data.length===0||!res.data[0].members.includes(clientid)){
+                const data={
+                    senderId:booking?.user?._id,
+                    receiverId:clientid
+                }
+                await axios.post(START_CONVERSATION,data).then(res=>{
+                    navigate('/profile/chat')
+                }).catch(err=>toast.error(err.message))
+            }else{
+                navigate('/profile/chat')
+            }
+        }).catch(err=>toast.error(err.message))
+    }
 
     return (
         <Container maxW={'7xl'}>
@@ -82,7 +98,7 @@ const Booking = () => {
                                     cancel &&
                                     <HStack>
                                         <VStack>
-                                            <HiOutlineChatAlt2 fontSize={50} color={'blue.800'} onClick={() => navigate('/profile/chat')} />
+                                            <HiOutlineChatAlt2 fontSize={50} color={'blue.800'} onClick={() => chat(booking?.hotel?.client)} />
                                             <Text>Chat With {booking?.hotel?.name} HR</Text>
                                         </VStack>
 

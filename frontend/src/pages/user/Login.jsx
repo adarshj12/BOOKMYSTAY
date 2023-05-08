@@ -1,20 +1,20 @@
 import React, { useState } from 'react'
 import {
-    AspectRatio,
-    Button,
-    Box,
     Container,
     Flex,
+    VStack,
+    Heading,
     FormControl,
     FormLabel,
-    Heading,
-    Image,
     Input,
-    Stack,
+    Button,
+    Box,
     Text,
-    VStack,
-    useDisclosure
-} from '@chakra-ui/react';
+    Stack,
+    AspectRatio,
+    Image,
+    useBreakpointValue
+} from "@chakra-ui/react";
 import axios from '../../utils/axios';
 import { Link, useNavigate } from 'react-router-dom';
 import authimg from '../../assets/auth.jpg'
@@ -32,7 +32,7 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const returnTo = useSelector(state=>state.url.url)
+    const returnTo = useSelector(state => state.url.url)
     const handleSubmit = async (event) => {
         event.preventDefault();
         console.log(email, password);
@@ -40,31 +40,31 @@ const Login = () => {
             email,
             password
         }
-            await axios.post(loginUser, body, { headers: { "Content-Type": "application/json" } }).then((res) => {
-                console.log(res);
-                console.log(JSON.stringify(res));
-                if (res.data.blocked) {
-                    Swal.fire({
-                        icon: "error",
-                        title: "You are blocked"
-                    })
-                } else {
-                    if (res.status === 202) {
-                        localStorage.setItem('userToken', res.data.token);
-                        const decode = jwtDecode(res.data.token);
-                        dispatch(login({
-                            user: decode.name,
-                            mobile:decode.mobile,
-                            token: res.data.token
-                        }))
-                        navigate('/');
-                        // navigate(returnTo);
-                    }
+        await axios.post(loginUser, body, { headers: { "Content-Type": "application/json" } }).then((res) => {
+            console.log(res);
+            console.log(JSON.stringify(res));
+            if (res.data.blocked) {
+                Swal.fire({
+                    icon: "error",
+                    title: "You are blocked"
+                })
+            } else {
+                if (res.status === 202) {
+                    localStorage.setItem('userToken', res.data.token);
+                    const decode = jwtDecode(res.data.token);
+                    dispatch(login({
+                        user: decode.name,
+                        mobile: decode.mobile,
+                        token: res.data.token
+                    }))
+                    navigate('/');
+                    // navigate(returnTo);
                 }
-            }).catch((err) => {
-                console.log(err);
-                toast.error(err.message)
-            })
+            }
+        }).catch((err) => {
+            console.log(err);
+            toast.error(err.message)
+        })
     };
 
     const signInWithGoogle = () => {
@@ -87,16 +87,16 @@ const Login = () => {
                             const decode = jwtDecode(res.data.token);
                             dispatch(login({
                                 user: decode.name,
-                                mobile:decode.mobile,
+                                mobile: decode.mobile,
                                 token: res.data.token
                             }))
                             navigate('/');
                         }
                     }
                 })
-                .catch((err => {
-                    toast.error(err.message)
-                }))
+                    .catch((err => {
+                        toast.error(err.message)
+                    }))
 
             })
             .catch((err => {
@@ -104,14 +104,16 @@ const Login = () => {
                 toast.error(err.message)
             }))
     }
+    const formWidth = useBreakpointValue({ base: "100%", md: "70%" });
+    const imageWidth = useBreakpointValue({ base: "100%", md: "30%" });
 
     return (
         <Container maxWidth='container.lg' padding={10}>
-            <Flex h={575} py={15}>
+            <Flex direction={{ base: "column", md: "row" }} h={575} py={15}>
 
                 <VStack
                     w='full'
-                    h='full'
+                   h={{ base: "auto", md: 575 }}
                     p={10}
                     spacing={10}
                     align='flex-start'
@@ -123,7 +125,7 @@ const Login = () => {
 
                 <VStack
                     w='full'
-                    h='full'
+                   h={{ base: "auto", md: 575 }}
                     p={8}
                     spacing={8}
                     align='flex-start'

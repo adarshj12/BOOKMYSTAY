@@ -15,6 +15,8 @@ import PublicRouteUser from './middlewares/userPath/PublicPath';
 import LoaderSpinner from './pages/LoaderSpinner';
 import HomeSpinner from './pages/HomeSpinner';
 
+import Messenger from './pages/Messenger/Messenger'
+
 // ****************************************************** USER PAGES  ****************************************************** //
 
 const Register = lazy(() => import('./pages/user/Register'))
@@ -94,6 +96,7 @@ const Images = lazy(()=>import('./pages/admin/Static/Cities'))
 const ErrorPage = lazy(() => import('./pages/PageNotFound'))
 
 const Error = lazy(()=>import('./pages/ServerError'))
+
 function App() {
 
   return (
@@ -116,6 +119,7 @@ function App() {
 
         {/* USER */}
 
+        <Route path='/messenger' element={<Messenger/>}/>
 
         <Route path='/register'
           element={

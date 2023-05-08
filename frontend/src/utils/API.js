@@ -44,6 +44,7 @@ export const GET_MY_HOTEL_BOOKINGS='/client/getBookings'
 export const GET_ALL_MY_BOOKINGS='/client/getmybookings'
 export const GET_USER_BOOKING='/client/getUserBookingDetail'
 export const GET_EARNINGS ='/client/earnings'
+export const GET_CLIENT_DETAIL='/client/detail'
 export const CHANGE_STATUS ='/client/bookingstatus' 
 export const CANCELLATIONS ='/client/cancellations'
 //ADMIN SIDE URLS==>
@@ -73,3 +74,10 @@ export const ADMIN_BANNER='/admin/banner'
 export const CHANGE_BANNER='/admin/updatebanner'
 export const CITY_IMAGE='/admin/city'
 export const ADMIN_CITIES='/admin/cities'
+
+// CHAT
+
+export const START_CONVERSATION ='/chat/startconverse'
+export const GET_CONVERSATIONS = '/chat/conversations'
+export const NEW_MESSAGE = '/chat/message'
+export const GET_MESSAGES='/chat/messages'

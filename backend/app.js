@@ -1,23 +1,24 @@
 const express = require('express');
 const cors = require('cors');
-const bodyParser=require('body-parser');
-const app=express();
-const userRoute= require('./routes/users');
-const adminRoute= require('./routes/admin');
-const clientRoute= require('./routes/client'); 
-const hotelRoute = require('./routes/hotels')
-const roomRoute = require('./routes/rooms')
-const connection = require('./config/db')
+const bodyParser = require('body-parser');
+const app = express();
+const userRoute = require('./routes/users');
+const adminRoute = require('./routes/admin');
+const clientRoute = require('./routes/client');
+const hotelRoute = require('./routes/hotels');
+const roomRoute = require('./routes/rooms');
+const chatRoute = require('./routes/chat');
+const connection = require('./config/db');
 require('dotenv').config();
 const http = require('http');
 const { Server } = require('socket.io');
 
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
-  },
+    cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"],
+    },
 });
 
 //middlewares
@@ -26,46 +27,67 @@ app.use(express.json());
 // app.use(bodyParser.json())
 // app.use(bodyParser.urlencoded({extended: true}));
 app.use(cors());
-app.use(express.urlencoded({extended:true})) 
+app.use(express.urlencoded({ extended: true }))
 
-app.use('/api/v1/users',userRoute);
-app.use('/api/v1/admin',adminRoute);
-app.use('/api/v1/client',clientRoute);
-app.use('/api/v1/hotels',hotelRoute);
-app.use('/api/v1/rooms',roomRoute);
+app.use('/api/v1/users', userRoute);
+app.use('/api/v1/admin', adminRoute);
+app.use('/api/v1/client', clientRoute);
+app.use('/api/v1/hotels', hotelRoute);
+app.use('/api/v1/rooms', roomRoute);
+app.use('/api/v1/chat', chatRoute);
 
-app.get('/api/v1/getKey',(req,res)=>res.status(200).json({key:process.env.RAZORPAY_API_KEY}))
+app.get('/api/v1/getKey', (req, res) => res.status(200).json({ key: process.env.RAZORPAY_API_KEY }))
 
 
-io.on("connection",(socket)=>{
-    socket.on("join_room",(data)=>{
-        socket.join(data.room);
-        
-        if (data.username === 'admin') {
-            socket.join('admin');
-        } else {
-            socket.to('admin').emit('user_joined', data);
-        }
-    });
-    
-    socket.on("send_message",(data)=>{
-        console.log(data);
-        
-        socket.to(data.room).emit("recieve_message",data);
-        socket.to('admin').emit('new_message', data);
-    });
-    
-    socket.on("disconnect",()=>{
-        const rooms = Object.keys(socket.rooms);
-        if (rooms.includes('admin')) {
-            socket.leave('admin');
-        }
-    });
-});
+try {
 
+    let users = []
+
+    const addUser = (userId, socketId) => {
+        !users.some(user => user.userId === userId) &&
+            users.push({ userId, socketId })
+    }
+
+    const removeUser = (socketId) => {
+        users = users.filter(user => user.socketId !== socketId)
+    }
+
+    const getUser = (userId) => {
+        return users.find(user => user.userId === userId)
+    }
+
+    io.on("connection", (socket) => {
+        //when connection
+        console.log("a user connected")
+        socket.on("addUser", userId => {
+            addUser(userId, socket.id)
+            io.emit("getUsers", users)
+        })
+
+        //send and get message
+        socket.on('sendMessage', ({ senderId, receiverId, text }) => {
+            console.log(senderId, receiverId, text);
+            const user = getUser(receiverId)
+            io.to(user.socketId).emit("getMessage", {
+                senderId,
+                text
+            })
+        })
+
+        //when disconnection
+        socket.on("disconnect", () => {
+            console.log("a user disconnected")
+            removeUser(socket.id)
+            io.emit("getUsers", users)
+        })
+    })
+} catch (error) {
+    console.log(error.message);
+
+}
 const port = process.env.PORT
 
-server.listen(port,async()=>{
+server.listen(port, async () => {
     await connection();
     console.log(`server started at http://localhost:${port}`);
 })

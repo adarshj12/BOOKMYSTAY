@@ -97,11 +97,11 @@ const Mobile = () => {
 
     return (
         <Container maxWidth='container.lg' padding={10}>
-            <Flex h={500} py={15}>
+            <Flex direction={{ base: "column", md: "row" }} h={500} py={15}>
 
                 <VStack
                     w='full'
-                    h='full'
+                    h={{ base: "auto", md: 575 }}
                     p={10}
                     spacing={10}
                     align='flex-start'
@@ -113,7 +113,7 @@ const Mobile = () => {
 
                 <VStack
                     w='full'
-                    h='full'
+                    h={{ base: "auto", md: 575 }}
                     p={8}
                     spacing={8}
                     align='flex-start'

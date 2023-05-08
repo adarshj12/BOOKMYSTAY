@@ -72,6 +72,17 @@ const deleteclient = async (req, res) => {
   }
 }
 
+const getClientDetail = async (req, res) => {
+  try {
+      const user = await Client.findById(req.params.id);
+      if (!user) return res.status(404).json('user not found');
+      res.status(200).json(user);
+  } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: `Error -> ${error.message}` })
+  }
+}
+
 const getClientBookings = async (req, res) => {
   try {
     const list = await Hotel.aggregate([
@@ -278,5 +289,6 @@ module.exports = {
   getBookingsPagination,
   getData,
   changeBookingStatus,
-  cancelledBookings
+  cancelledBookings,
+  getClientDetail
 }

@@ -488,6 +488,7 @@ const getMyBookng = async (req, res) => {
                     'status': 1,
                     'hotel._id': 1,
                     'hotel.name': 1,
+                    'hotel.client': 1,
                     'hotel.type': 1,
                     'hotel.city': 1,
                     'hotel.address': 1,
