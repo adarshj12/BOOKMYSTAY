@@ -22,6 +22,7 @@ export const GET_BOOKING = 'hotels/booking'
 export const GET_MY_BOOKINGS='/users/bookings'
 export const GET_MY_BOOKING='/users/booking'
 export const TOP_DESTINATIONS ='/hotels/top'
+export const RATE_HOTEL='/hotels/rate'
 export const REVIEWS ='/hotels/ratings'
 export const HOTEL_RATING='/hotels/hotelRating'
 

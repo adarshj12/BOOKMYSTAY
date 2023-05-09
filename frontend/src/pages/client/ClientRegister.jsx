@@ -111,11 +111,11 @@ const ClientRegister = () => {
 
     return (
         <Container maxWidth='container.lg' padding='10'>
-            <Flex h={570} py={15}>
+            <Flex direction={{ base: "column", md: "row" }} h={570} py={15}>
 
                 <VStack
                     w='full'
-                    h='full'
+                    h={{ base: "auto", md: 575 }}
                     p={10}
                     spacing={10}
                     align='flex-start'
@@ -127,7 +127,7 @@ const ClientRegister = () => {
 
                 <VStack
                     w='full'
-                    h='full'
+                    h={{ base: "auto", md: 575 }}
                     p={4}
                     spacing={8}
                     align='flex-start'

@@ -7,26 +7,43 @@ import {
     ModalBody,
     ModalCloseButton,
     Box,
+    Text,
     Button,
     useDisclosure,
     Center,
-    Textarea
+    Textarea,
+    Input,
+    VStack
 } from '@chakra-ui/react'
 import { StarIcon } from '@chakra-ui/icons';
 import { useState } from 'react';
+import { RATE_HOTEL } from '../../../utils/API';
+import axios from '../../../utils/axios'
+import { Toaster, toast } from 'react-hot-toast';
 const BasicUsage = ({ hotel,hotelid,userid }) => {
     const [rating, setRating] = useState(0);
+    const [title,setTitle] = useState('')
     const [review,setReview] = useState('')
     const { isOpen, onOpen, onClose } = useDisclosure()
     const handleStarClick = (index) => {
         setRating(index + 1);
     };
-    const handleReviewChange = (e) => {
-        setReview(e.target.value);
-      };
     const submitReview=async()=>{
         onClose()
-        console.log(hotel,hotelid,userid,review,rating)
+        console.log(hotel,hotelid,userid,review,rating,title)
+        const body={
+            hotelId:hotelid,
+            userId:userid,
+            review,
+            rating,
+            title
+        }
+        const token = localStorage.getItem('userToken')
+        await axios.post(RATE_HOTEL,body, { headers: { 'Authorization': `Bearer ${token}` } }).then(res=>{
+
+        }).catch(err=>{
+            toast.error(err.response.data.message)
+        })
     }
     return (
         <>
@@ -56,7 +73,10 @@ const BasicUsage = ({ hotel,hotelid,userid }) => {
                         </Center>
                         <Center>
                             <Box display="flex" mt="2" alignItems="center">
-                                <Textarea onChange={handleReviewChange}/>
+                                <VStack>
+                                <Input placeholder='enter title for review' onChange={(e)=>setTitle(e.target.value)}/>
+                                <Textarea placeholder='enter your review here' onChange={(e)=>setReview(e.target.value)}/>
+                                </VStack>
                             </Box>
                         </Center>
                     </ModalBody>
@@ -67,6 +87,7 @@ const BasicUsage = ({ hotel,hotelid,userid }) => {
                         </Button>
                     </ModalFooter>
                 </ModalContent>
+                <Toaster/>
             </Modal>
         </>
     )

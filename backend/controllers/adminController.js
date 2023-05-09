@@ -188,29 +188,30 @@ const dashboard = async (req, res) => {
         ])
         const revenue = await Book.aggregate([
             {
-                $group: {
-                    _id: {
-                        $month: '$booking_date'
+                '$group': {
+                    '_id': {
+                        '$month': '$booking_date'
                     },
-                    revenue: {
-                        $sum: '$rate'
+                    'revenue': {
+                        '$sum': '$rate'
                     }
                 }
             },
             {
-                $project: {
-                    month: '$_id',
-                    revenue: 1,
-                    _id: 0
+                '$project': {
+                    'month': '$_id',
+                    'revenue': 1,
+                    '_id': 0
                 }
             },
             {
-                $sort: {
-                    month: 1
+                '$sort': {
+                    'month': 1
                 }
             }
         ])
-        res.json({ payment, revenue, users, properties, total })
+        console.log(payment, revenue);
+        res.status(200).json({ payment, revenue, users, properties, total })
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` });
@@ -267,28 +268,6 @@ const addCityImage=async(req,res)=>{
         res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
-
-// const payclient = async (req, res) => {
-//     try {
-//         // console.log(req.body)
-//         const share = req.body.share
-//         const client = await Client.findById(req.body.id)
-//         await Client.findByIdAndUpdate(req.body.id, {
-//             $set: {
-//                 earnings: client.earnings + share
-//             }
-//         })
-//         await Payment.findByIdAndUpdate(req.body.payid, {
-//             $set: {
-//                 status: 'paid'
-//             }
-//         })
-//         res.status(200).json('payment successful')
-//     } catch (error) {
-//         console.log(error);
-//         res.status(500).json({ message: `Error -> ${error.message}` })
-//     }
-// }
 
 const PAYMENT_DATA={}
 

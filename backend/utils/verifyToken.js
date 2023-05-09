@@ -12,11 +12,11 @@ const verifyUser =async(req,res,next)=>{
             next();
         }    
         else {
-            return res.status(403).json({ message: `Unauthorized` });
+            return res.status(401).json({ message: `Unauthorized` });
         } 
     } catch (error) {
         console.log(`error=> ${error.message}`);
-        return res.status(201).json({ message: `Authorization failed  ${error.message}` })
+        return res.status(403).json({ message: `Authorization failed due to  ${error.message}` })
     }
 }
 
@@ -31,11 +31,11 @@ const verifyClient =async(req,res,next)=>{
             next();
         }    
         else {
-            return res.status(403).json({ message: `Unauthorized` });
+            return res.status(401).json({ message: `Unauthorized` });
         } 
     } catch (error) {
         console.log(`error=> ${error.message}`);
-        return res.status(201).json({ message: `Authorization failed  ${error.message}` })
+        return res.status(403).json({ message: `Authorization failed due to  ${error.message}` })
     }
 }
 
@@ -50,11 +50,11 @@ const verifyAdmin =async(req,res,next)=>{
             next();
         }    
         else {
-            return res.status(403).json({ message: `Unauthorized` });
+            return res.status(401).json({ message: `Unauthorized` });
         } 
     } catch (error) {
         console.log(`error=> ${error.message}`);
-        return res.status(201).json({ message: `Authorization failed  ${error.message}` })
+        return res.status(403).json({ message: `Authorization failed due to  ${error.message}` })
     }
 }
 

@@ -1,5 +1,6 @@
 const express = require('express');
 const { countByCity, countByType, getProperty, getAllHotels, getDestinations, getHotelRooms, getBookingDetails, rateHotel, topDestinations, getRatings, getHotelRating } = require('../controllers/hotelController');
+const { verifyUser } = require('../utils/verifyToken');
 const router = express.Router();
 
 router.get('/getbyCity',countByCity);
@@ -16,7 +17,7 @@ router.get('/rooms/:id/:start/:end',getHotelRooms);
 
 router.get('/booking/:id',getBookingDetails);
 
-router.post('/rate',rateHotel);
+router.post('/rate',verifyUser,rateHotel);
 
 router.get('/top',topDestinations);
 

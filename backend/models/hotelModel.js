@@ -55,15 +55,12 @@ const HotelSchema = new mongoose.Schema({
     },
     landmark: {
         type: String,
-        required: true
     },
     lattitude: {
         type: Number,
-        required: true
     },
     longitude: {
         type: Number,
-        required: true
     },
     photos: {
         type: [ImageSchema]

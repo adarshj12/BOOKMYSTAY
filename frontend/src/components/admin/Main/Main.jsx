@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Flex, Heading, Table,Text, Thead, Tbody, Tr, Th, Td,Spacer,Center, VStack ,HStack} from '@chakra-ui/react';
-import { FaRupeeSign,FaUsers } from 'react-icons/fa'; 
-import { TbBuildingBank} from 'react-icons/tb'; 
+import { Box, Flex, Heading, Table, Text, Thead, Tbody, Tr, Th, Td, Spacer,Stack, Center, VStack, HStack, Grid } from '@chakra-ui/react';
+import { FaRupeeSign, FaUsers } from 'react-icons/fa';
+import { TbBuildingBank } from 'react-icons/tb';
 import Piechart from './Piechart'
 import LineGraph from './LineGraph';
 import { DASHBOARD } from '../../../utils/API';
@@ -10,103 +10,89 @@ import { Toaster, toast } from 'react-hot-toast';
 
 const Main = () => {
 
-  const [payment,setPayment] = useState([]);
-  const [revenue,setRevenue] = useState([]);
-  const [users,setusers] = useState(0)
-  const [properties,setproperties] = useState(0)
-  const [total,settotal] = useState(0)
+  const [payment, setPayment] = useState([]);
+  const [revenue, setRevenue] = useState([]);
+  const [users, setusers] = useState(0)
+  const [properties, setproperties] = useState(0)
+  const [total, settotal] = useState(0)
   const token = localStorage.getItem('adminToken');
-  const dashboardData =async()=>{
-    await axios.get(DASHBOARD, { headers: { 'Authorization': `Bearer ${token}` } }).then(res=>{
+  const dashboardData = async () => {
+    await axios.get(DASHBOARD, { headers: { 'Authorization': `Bearer ${token}` } }).then(res => {
+      console.log(res.data.payment);
+      console.log(res.data.revenue);
       setPayment(res.data.payment);
       setRevenue(res.data.revenue);
       setusers(res.data.users)
       setproperties(res.data.properties)
       settotal(res.data.total[0].totalRate)
-    }).catch(err=>{
+    }).catch(err => {
       toast.error(err.message)
     })
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     dashboardData()
-  },[])
+  }, [])
   return (
     <>
-      <>
-        <Box p={4}>
-          <Flex>
-            <Box ml={4} flex={1}>
-              <Box bg="white" p={4} rounded="lg" shadow="md" mb={4}>
-               
-                <Flex>
-                  <Box w='250px' h={100} boxShadow="md">
-                    <Center>
-                      <VStack>
-                    <Text fontWeight={'extrabold'}>Total Users</Text>
-                    <HStack>
-                      <FaUsers fontSize={40}/>
-                      <Heading fontStyle={'italic'}>{users}</Heading>
-                      </HStack> 
-                      </VStack>
-                   
-                    </Center>
-                  </Box>
-                  <Spacer />
-                  <Box w='250px' h={100} boxShadow="md">
-                  <Center>
-                      <VStack>
-                    <Text fontWeight={'extrabold'}>Total Properties</Text>
-                    <HStack>
-                      <TbBuildingBank fontSize={40}/>
-                      <Heading fontStyle={'italic'}>{properties}</Heading>
-                      </HStack> 
-                      </VStack>
-                   
-                    </Center>
-                  </Box>
-                  <Spacer />
-                  <Box w='250px' h={100} boxShadow="md">
-                  <Center>
-                      <VStack>
-                    <Text fontWeight={'extrabold'}>Total Revenue</Text>
-                     <HStack>
-                      <FaRupeeSign fontSize={40}/>
-                      <Heading fontStyle={'italic'}>{total*0.2}</Heading>
-                      </HStack> 
-                      </VStack>
-                   
-                    </Center>          
-                  </Box>
+      <Box p={4}>
+        <Grid templateColumns={{ base: '1fr', md: '1fr 1fr 1fr' }} gap={4}>
+          <Box bg="white" p={4} rounded="lg" shadow="md">
+            <Stack direction="column" spacing={2} align="center">
+              <Text fontWeight="extrabold">Total Users</Text>
+              <HStack>
+                <FaUsers fontSize={40} />
+                <Heading as="h2" fontSize="2xl" fontStyle="italic">
+                  {users}
+                </Heading>
+              </HStack>
+            </Stack>
+          </Box>
 
-                </Flex>
+          <Box bg="white" p={4} rounded="lg" shadow="md">
+            <Stack direction="column" spacing={2} align="center">
+              <Text fontWeight="extrabold">Total Properties</Text>
+              <HStack>
+                <TbBuildingBank fontSize={40} />
+                <Heading as="h2" fontSize="2xl" fontStyle="italic">
+                  {properties}
+                </Heading>
+              </HStack>
+            </Stack>
+          </Box>
 
-                <Flex mt={50}>
-                  <Box w='500px' h={250} boxShadow="md">
-                    <Center>
-                      <VStack>
+          <Box bg="white" p={4} rounded="lg" shadow="md">
+            <Stack direction="column" spacing={2} align="center">
+              <Text fontWeight="extrabold">Total Revenue</Text>
+              <HStack>
+                <FaRupeeSign fontSize={40} />
+                <Heading as="h2" fontSize="2xl" fontStyle="italic">
+                  {total * 0.2}
+                </Heading>
+              </HStack>
+            </Stack>
+          </Box>
+        </Grid>
 
-                    <Text fontWeight={'extrabold'}>Payment Mode</Text>
-                     <Piechart payment={payment}/>
-                      </VStack>
-                   
-                    </Center>
-                  </Box>
-                  <Spacer />
-                  <Box w='500px' h={250} boxShadow="md">
-                  <Center>
-                     <LineGraph revenue={revenue}/>
-                   
-                    </Center>
-                  </Box>
+        <Grid mt={8} templateColumns={{ base: '1fr', md: '1fr 1fr' }} gap={4}>
+          <Box bg="white" p={4} rounded="lg" shadow="md">
+            <Stack direction="column" spacing={2}>
+              <Text fontWeight="extrabold">Payment Mode</Text>
+              <Piechart payment={payment} />
+            </Stack>
+          </Box>
 
-                </Flex>
-              </Box>
-            </Box>
-          </Flex>
-          <Toaster/>
-        </Box>
-      </>
+          <Box bg="white" p={4} rounded="lg" shadow="md">
+            <Stack direction="column" spacing={2}>
+              <Text fontWeight="extrabold">Revenue</Text>
+              <LineGraph revenue={revenue} />
+            </Stack>
+          </Box>
+        </Grid>
+
+        <Toaster />
+      </Box>
+
     </>
   )
 }

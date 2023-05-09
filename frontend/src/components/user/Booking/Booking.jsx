@@ -4,19 +4,19 @@ import {
     Button,
     Center,
     Container,
-    Badge, 
-    Box, 
-    Radio, 
-    RadioGroup, 
-    Divider, 
-    Flex, 
-    GridItem, 
-    Heading, 
-    HStack, 
-    Image, 
-    SimpleGrid, 
-    Stack, 
-    Text, 
+    Badge,
+    Box,
+    Radio,
+    RadioGroup,
+    Divider,
+    Flex,
+    GridItem,
+    Heading,
+    HStack,
+    Image,
+    SimpleGrid,
+    Stack,
+    Text,
     VStack
 } from '@chakra-ui/react';
 import razorpay from '../../../../src/assets/razorpay.jpeg'
@@ -87,7 +87,6 @@ const Booking = () => {
             description: "Booking Application",
             image: logo,
             order_id: order.id,
-            // callback_url: `http://localhost:4000/api/v1/users/verification/${hotelid}/${room}/${dateRange}/${count}`,
             callback_url: `http://localhost:4000/api/v1/users/verification`,
 
             prefill: {
@@ -148,7 +147,7 @@ const Booking = () => {
                     <HomeSpinner />
                     :
                     <Container maxWidth='container.xl' padding='5'>
-                        <Flex h={'100vh'} py={20}>
+                        <Flex direction={{ base: "column", md: "row" }} h={'100vh'} py={20}>
                             <VStack
                                 w={'full'}
                                 p={5}
@@ -211,70 +210,53 @@ const Booking = () => {
 
                             </VStack>
 
-                            <VStack
-                                bg={'gray.100'}
-                                w={'full'}
-                                p={5}
-                                spacing={10}
-                                align={'flex-start'}
-                            >
+                            <VStack bg='gray.100' w='full' p={{ base: 3, md: 5 }} spacing={5} align='flex-start'>
                                 <VStack spacing={2} align={'flex-start'}>
                                     <Heading>
                                         {location.state.hotel}
                                     </Heading>
                                     <Text>{location.state.address}</Text>
                                 </VStack>
-                                <HStack spacing={4} alignItems={'center'} w={'full'}>
-                                    <AspectRatio ratio={1} w={150} h={150}>
+                                <HStack spacing={{ base: 2, md: 4 }} alignItems='center' w='full'>
+                                    <AspectRatio ratio={1} w={{ base: '50px', md: '150px' }} h={{ base: '50px', md: '150px' }}>
                                         <Image src={location.state.photo} />
                                     </AspectRatio>
                                     <VStack>
-
-                                        <Heading size={'md'} color={'gray.600'}>{location.state.room} ({location.state.count} rooms) </Heading>
-                                        <HStack  >
-                                            <Box width="40%" >
+                                        <Heading size={{ base: 'sm', md: 'md' }} color='gray.600'>
+                                            {location.state.room} ({location.state.count} rooms)
+                                        </Heading>
+                                        <HStack spacing={{ base: 2, md: 4 }}>
+                                            <Box width={{ base: '40%', md: 'auto' }}>
                                                 <VStack>
-                                                    <Text color={'gray.400'}>CHECK IN</Text>
-                                                    <Text fontWeight={'bold'}>{checkIn.toString().slice(4, 15)}</Text>
-                                                    <Text color={'gray.400'}>{dayOfWeek1} 12 PM</Text>
+                                                    <Text color='gray.400'>CHECK IN</Text>
+                                                    <Text fontWeight='bold'>{checkIn.toString().slice(4, 15)}</Text>
+                                                    <Text color='gray.400'>{dayOfWeek1} 12 PM</Text>
                                                 </VStack>
                                             </Box>
-                                            <Center height='100px'  >
-                                                <Divider orientation='vertical' />
-                                            </Center>
-                                            <Box width="20%" >
-                                                <Badge colorScheme='purple' >{location.state.days} NIGHTS</Badge>
-
-
+                                            <Divider orientation='vertical' display={{ base: 'none', md: 'block' }} />
+                                            <Box width={{ base: '20%', md: 'auto' }}>
+                                                <Badge colorScheme='purple'>{location.state.days} NIGHTS</Badge>
                                             </Box>
-                                            <Center height='100px'  >
-                                                <Divider orientation='vertical' />
-                                            </Center>
-                                            <Box width="40%" >
+                                            <Divider orientation='vertical' display={{ base: 'none', md: 'block' }} />
+                                            <Box width={{ base: '40%', md: 'auto' }}>
                                                 <VStack>
-                                                    <Text color={'gray.400'}>CHECK OUT</Text>
-                                                    <Text fontWeight={'bold'}>{checkOut.toString().slice(4, 15)}</Text>
-                                                    <Text color={'gray.400'}>{dayOfWeek2} 11 AM</Text>
+                                                    <Text color='gray.400'>CHECK OUT</Text>
+                                                    <Text fontWeight='bold'>{checkOut.toString().slice(4, 15)}</Text>
+                                                    <Text color='gray.400'>{dayOfWeek2} 11 AM</Text>
                                                 </VStack>
                                             </Box>
                                         </HStack>
                                     </VStack>
-
-
                                 </HStack>
-                                <HStack p={20} style={{ flex: 1 }}>
-                                    <Text fontWeight={'bold'} style={{ textAlign: 'center', flex: 1 }}
-
-                                    >
+                                <HStack p={{ base: 3, md: 20 }} w='full'>
+                                    <Text fontWeight='bold' flex={{ base: 1, md: 'none' }} textAlign={{ base: 'center', md: 'left' }}>
                                         Total Amount to be paid
                                     </Text>
-                                    <Heading fontWeight={'bold'} style={{ textAlign: 'center', flex: 1 }}>
+                                    <Heading fontWeight='bold' flex={{ base: 1, md: 'none' }} textAlign={{ base: 'center', md: 'right' }}>
                                         ₹ {location.state.rate}
                                     </Heading>
                                 </HStack>
-
                             </VStack>
-
                         </Flex>
 
                     </Container>

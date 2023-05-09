@@ -6,12 +6,13 @@ import {
     Button,
     Heading,
     Spacer,
+    Stack,
     HStack,
     VStack
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import axios from '../../../utils/axios'
-import { GET_MY_BOOKING,START_CONVERSATION,GET_CONVERSATIONS } from '../../../utils/API';
+import { GET_MY_BOOKING, START_CONVERSATION, GET_CONVERSATIONS } from '../../../utils/API';
 import toast, { Toaster } from "react-hot-toast";
 import { BsArrowLeftRight, BsFillPersonFill } from 'react-icons/bs'
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -59,22 +60,22 @@ const Booking = () => {
         }
     }, [booking]);
 
-    const chat =async(clientid)=>{
-        console.log(booking?.user?._id,clientid);
-        await axios.get(`${GET_CONVERSATIONS}/${booking?.user?._id}`).then(async(res)=>{
+    const chat = async (clientid) => {
+        console.log(booking?.user?._id, clientid);
+        await axios.get(`${GET_CONVERSATIONS}/${booking?.user?._id}`).then(async (res) => {
             console.log(res.data)
-            if(res.data.length===0||!res.data[0].members.includes(clientid)){
-                const data={
-                    senderId:booking?.user?._id,
-                    receiverId:clientid
+            if (res.data.length === 0 || !res.data[0].members.includes(clientid)) {
+                const data = {
+                    senderId: booking?.user?._id,
+                    receiverId: clientid
                 }
-                await axios.post(START_CONVERSATION,data).then(res=>{
+                await axios.post(START_CONVERSATION, data).then(res => {
                     navigate('/profile/chat')
-                }).catch(err=>toast.error(err.message))
-            }else{
+                }).catch(err => toast.error(err.message))
+            } else {
                 navigate('/profile/chat')
             }
-        }).catch(err=>toast.error(err.message))
+        }).catch(err => toast.error(err.message))
     }
 
     return (
@@ -87,7 +88,7 @@ const Booking = () => {
                             <Heading >{booking?.hotel?.name}</Heading>
                         </Box>
                         <Spacer />
-                        {status?
+                        {status ?
                             <VStack>
                                 <Heading fontStyle={'italic'} color={'red'} fontFamily={'sans-serif'}>Canceled</Heading>
                                 <Text>Awaiting Refund</Text>
@@ -178,24 +179,31 @@ const Booking = () => {
                     <Text>+91{booking?.user?.mobile}</Text>
                 </Box>
                 <Box
-                    bg="gray.200" // Set the default grey box color
-                    color="black" // Set the text color to black
-                    textTransform="uppercase" // Set the text to uppercase
-                    width="100%" // Set the width to 100% for responsiveness
-                    p={4} // Add padding to the box
+                    bg="gray.200"
+                    color="black"
+                    textTransform="uppercase"
+                    width="100%"
+                    p={4}
                 >
                     PAYMENT INFORMATION
                 </Box>
-                <Box mt={5} mb={5}>
-                    <HStack>
-                        <Text>Total:</Text>
-                        <Text fontWeight={'bold'}>₹ {booking?.rate}</Text>
-                    </HStack>
-                    <HStack><Text textTransform={'uppercase'}>Payment Mode:</Text>
-                        <Text >{booking?.payment_mode}</Text></HStack>
-                    <HStack><Text textTransform={'uppercase'}>Transaction ID:</Text>
-                        <Text >{booking?.payment_id}</Text></HStack>
+                <Box mt={[3, 5]} mb={[3, 5]}>
+                    <Stack spacing={[2, 3]}>
+                        <HStack>
+                            <Text>Total:</Text>
+                            <Text fontWeight='bold' fontSize={['md', 'lg']}>₹ {booking?.rate}</Text>
+                        </HStack>
+                        <HStack>
+                            <Text textTransform='uppercase'>Payment Mode:</Text>
+                            <Text fontSize={['sm', 'md']}>{booking?.payment_mode}</Text>
+                        </HStack>
+                        <HStack>
+                            <Text textTransform='uppercase'>Transaction ID:</Text>
+                            <Text fontSize={['sm', 'md']}>{booking?.payment_id}</Text>
+                        </HStack>
+                    </Stack>
                 </Box>
+
             </Box>
             <Toaster />
         </Container>

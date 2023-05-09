@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, Text, VStack, HStack, Table, Th, Tbody, Thead, Tr, Avatar, Td } from "@chakra-ui/react";
+import { Box, Flex, Heading, Text, VStack, HStack, Grid, Table, Th, Tbody, Thead, Tr, Avatar, Td } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { getAllProperties } from '../../../utils/API'
 import { GET_MY_HOTEL_BOOKINGS } from '../../../utils/API'
@@ -7,7 +7,7 @@ import jwtDecode from "jwt-decode";
 
 const ClientDashboard = () => {
   const [list, setList] = useState()
-  const [bookings,setBookings]=useState([])
+  const [bookings, setBookings] = useState([])
 
   const getProperties = async () => {
     try {
@@ -45,7 +45,7 @@ const ClientDashboard = () => {
   useEffect(() => {
     getProperties()
     getMyHotelBookings()
-  }, [list,bookings])
+  }, [list, bookings])
   // console.log(list)
 
   return (
@@ -82,17 +82,6 @@ const ClientDashboard = () => {
 
               </Tbody>
             </Table>
-            <VStack align="stretch" spacing={2}>
-              <Box bg="gray.100" p={2} rounded="md">
-                {/* User 1 booked hotel */}
-              </Box>
-              {/* <Box bg="gray.100" p={2} rounded="md">
-                User 2 created a new task
-              </Box>
-              <Box bg="gray.100" p={2} rounded="md">
-                User 3 completed a task
-              </Box> */}
-            </VStack>
           </Box>
           <Box bg="white" p={4} rounded="lg" shadow="md">
             <Heading size="md" mb={2}>
@@ -117,7 +106,7 @@ const ClientDashboard = () => {
                   <Td>{bookings?.type}</Td>
                   <Td>{new Date(bookings?.result?.checkin).toDateString()}</Td>
                   <Td>{new Date(bookings?.result?.checkout).toDateString()}</Td>
-                  <Td>2023-04-02</Td>
+                  <Td>{new Date(bookings?.result?.booking_date).toDateString()}</Td>
                 </Tr>
 
               </Tbody>
@@ -126,6 +115,7 @@ const ClientDashboard = () => {
         </Box>
       </Flex>
     </Box>
+
   );
 }
 
