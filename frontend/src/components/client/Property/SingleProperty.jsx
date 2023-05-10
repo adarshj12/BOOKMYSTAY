@@ -60,7 +60,7 @@ const SingleProperty = () => {
   return (
     <>
       <Container maxWidth='container.lg' padding={10}>
-        <Flex h={575} py={15}>
+        <Flex direction={{ base: "column", md: "row" }} h={575} py={15}>
 
           <VStack
             w='full'

@@ -31,7 +31,6 @@ const register = async (req, res) => {
         await newUser.save();
         res.status(201).json({ message: `user registered` })
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
@@ -48,7 +47,6 @@ const login = async (req, res) => {
         res.status(202)
             .json({ message: 'login successful', token })
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
@@ -83,13 +81,11 @@ const googleAuth = async (req, res) => {
             const token = jwt.sign({ id: newUser._id, name: newUser.username, user: true }, process.env.SECRET);
             return res.status(202).json({ message: 'login successful', token })
         } else {
-            // console.log('user exist ',userExist);
             if (userExist.isBlocked) return res.status(203).json({ blocked: true });
             const token = jwt.sign({ id: userExist._id, name: userExist.username, mobile: userExist.mobile, user: true }, process.env.SECRET);
             return res.status(202).json({ message: 'login successful', token })
         }
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
@@ -103,7 +99,6 @@ const mobileUpdate = async (req, res) => {
         }, { new: true })
         res.status(200).json({ message: 'mobile updated', user })
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
@@ -114,7 +109,6 @@ const getUserDetail = async (req, res) => {
         if (!user) return res.status(404).json('user not found');
         res.status(200).json(user);
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
@@ -124,7 +118,6 @@ const deleteuser = async (req, res) => {
         await User.findByIdAndDelete(req.params.id);
         res.status(200).json("user deleted");
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
@@ -132,96 +125,13 @@ const deleteuser = async (req, res) => {
 const updateUser = async (req, res) => {
     try {
         const user = await User.findById(req.params.id)
-        console.log(user, '-', req.body);
-        const salt = bcrypt.genSaltSync(10);
-        req.body.password = bcrypt.hashSync(req.body.password, salt);
         await User.findByIdAndUpdate(req.params.id, req.body)
         res.status(200).json('user updated');
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
 
-// const booking = async (req, res) => {
-//     try {
-//         let duration = req.body.dateRange;
-//         let dateStrings = duration.map((str) => new Date(str).toDateString());
-//         const book = new Book({
-//             hotel: req.body.hotelid,
-//             checkin: duration[0],
-//             checkout: duration[duration.length - 1],
-//         });
-//         const savedBook = await book.save();
-//         let count = req.body.count;
-//         const rooms = await Room.find({ title: req.body.room, hotel: req.body.hotelid });
-//         console.log(rooms);
-//         for (let i = 0; i < rooms.length && count > 0; i++) {
-//             const room = rooms[i];
-//             let dates = room.unavailableDates.map((date) => new Date(date).toDateString());
-//             if (dates.some((date) => dateStrings.includes(date))) {
-//                 console.log('Room already booked for some dates');
-//                 continue;
-//             }
-//             await Room.findByIdAndUpdate(room._id, {
-//                 $push: {
-//                     unavailableDates: duration
-//                 }
-//             }, { new: true });
-//             await Book.findByIdAndUpdate(savedBook._id, {
-//                 $push: {
-//                     rooms: room._id
-//                 }
-//             });
-//             count--;
-//         }
-
-//         res.status(201).json('booking successful');
-//     } catch (error) {
-//         console.log(error);
-//         res.status(500).json({ message: `Error -> ${error.message}` });
-//     }
-// }
-
-
-// const checkout = async (req, res) => {
-//     console.log('hello');
-//     var options = {
-//       amount: Number(req.body.amount * 100),
-//       currency: "INR"
-//     };
-//     const order = await instance.orders.create(options)
-//     console.log(order);
-//     res.status(200).json({ success: true, order })
-//   }
-
-// const verification = async (req, res) => {
-//     // console.log(req.body);
-//     // console.log('params', req.params.id);
-//     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-//     const body = razorpay_order_id + "|" + razorpay_payment_id;
-
-
-//     const expectedSignature = crypto.createHmac('sha256', process.env.RAZORPAY_API_SECRET)
-//       .update(body.toString())
-//       .digest('hex');
-//     console.log("sig received ", razorpay_signature);
-//     console.log("sig generated ", expectedSignature);
-//     const isAuthentic = expectedSignature === razorpay_signature
-
-//     if (isAuthentic) {
-//     //   await Payment.create({
-//     //     razorpay_order_id,
-//     //     razorpay_payment_id,
-//     //     razorpay_signature
-//     //   })
-//       res.redirect(`http://localhost:3000/paymentsuccess?reference=${razorpay_payment_id}`)
-//     } else {
-//       res.status(400).json({ success: false })
-//     }
-
-
-//   }
 
 const createBooking = async (hotelId, roomTitle, dateRange, count, user, payment, rate) => {
     try {
@@ -286,25 +196,11 @@ const createBooking = async (hotelId, roomTitle, dateRange, count, user, payment
         console.log('booking successful');
     } catch (error) {
         console.log(error);
-        throw new Error(`Error -> ${error.message}`);
+        // throw new Error(`Error -> ${error.message}`);
     }
 };
 
 
-// const data = {}
-
-// const getbookingDetails = (req, res) => {
-//     try {
-//         data.dateRange = req.body.dateRange;
-//         data.hotelid = req.body.hotelid
-//         data.room = req.body.room;
-//         data.count = req.body.count;
-//         res.status(201).json({ success: true })
-//     } catch (error) {
-//         console.log(error);
-//         res.status(500).json({ message: `Error -> ${error.message}` });
-//     }
-// }
 
 const BOOKING_DETAILS = {}
 let stripe_username =''
@@ -321,7 +217,6 @@ const bookingDetails = async(req, res) => {
         console.log(BOOKING_DETAILS);
         res.status(201).json({ success: true })
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
@@ -332,7 +227,6 @@ const checkout = async (req, res) => {
         currency: "INR"
     };
     const order = await instance.orders.create(options)
-    console.log(order);
     res.status(200).json({ success: true, order })
 }
 
@@ -343,8 +237,6 @@ const verification = async (req, res) => {
     const expectedSignature = crypto.createHmac('sha256', process.env.RAZORPAY_API_SECRET)
         .update(body.toString())
         .digest('hex');
-    console.log("sig received ", razorpay_signature);
-    console.log("sig generated ", expectedSignature);
     const isAuthentic = expectedSignature === razorpay_signature;
 
     if (isAuthentic) {
@@ -377,7 +269,6 @@ const stripe_payment = async (req, res) => {
         success_url: `http://localhost:3000/paymentsuccess`,
         cancel_url: 'http://localhost:3000/paymentcancel',
     });
-    console.log(session.id);
     res.json({ url: session.url });
 }
 
@@ -408,7 +299,6 @@ const stripe_webhook = async (req, res) => {
     if (eventType === 'checkout.session.completed') {
         const paymentId = data.payment_intent;
         const payment = await stripe.paymentIntents.retrieve(paymentId);
-        console.log('zara zara', payment);
         await createBooking(BOOKING_DETAILS.hotelid, BOOKING_DETAILS.room, BOOKING_DETAILS.dateRange, BOOKING_DETAILS.count, BOOKING_DETAILS.user, { stripe: true, id: payment.id }, BOOKING_DETAILS.rate);
     }
     res.send();
@@ -416,10 +306,13 @@ const stripe_webhook = async (req, res) => {
 
 const getMyBookings = async (req, res) => {
     try {
+        const page = req.query.page ? parseInt(req.query.page) : 1;
+        const size = req.query.size ? parseInt(req.query.size) : 10;
+        const skip = (page - 1) * size;
         const data = await Book.aggregate([
             {
                 '$match': {
-                    'user': new mongoose.Types.ObjectId(req.params.id)
+                    'user': new mongoose.Types.ObjectId(req.query.id)
                 }
             }, {
                 '$lookup': {
@@ -434,7 +327,14 @@ const getMyBookings = async (req, res) => {
                 }
             }
         ])
-        res.status(200).json(data)
+        const total = data.length;
+        const list = data.slice(skip, skip + size);
+        return res.json({
+            records: list,
+            total,
+            page,
+            size
+        })
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` });
@@ -511,7 +411,6 @@ const getMyBookng = async (req, res) => {
         if (!data) return res.status(403).json('data not found')
         res.status(200).json(data[0])
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
@@ -521,7 +420,6 @@ const banner = async(req,res)=>{
         const banner = await Banner.findOne()
         res.status(200).json(banner)
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
@@ -532,7 +430,6 @@ const cities = async(req,res)=>{
         if(!cities) return res.status(203).json('no cities found');
         res.status(200).json(cities)
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }

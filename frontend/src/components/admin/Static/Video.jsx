@@ -11,6 +11,8 @@ import {
     Button
 } from '@chakra-ui/react';
 import axios from '../../../utils/axios'
+import {adminInstance} from '../../../utils/axios'
+
 import { ADMIN_BANNER } from '../../../utils/API';
 import Change from './VideoModal'
 import { useEffect, useState } from 'react';
@@ -18,7 +20,7 @@ export default function BlogPostWithImage() {
     const token = localStorage.getItem('adminToken')
     const [video,setVideo]=useState('')
     const banner=async()=>{
-        await axios.get(ADMIN_BANNER,{ headers: { 'Authorization': `Bearer ${token}` } }).then(res => setVideo(res.data)).catch(err => console.log(`places fetch error : ${err.message}`))
+        await adminInstance.get(ADMIN_BANNER).then(res => setVideo(res.data)).catch(err => console.log(`places fetch error : ${err.message}`))
     }
     useEffect(()=>{
         banner()

@@ -11,7 +11,6 @@ require('dotenv').config();
 
 const register = async (req, res) => {
   try {
-    //console.log('hi');
     let { username, email, password, mobile } = req.body;
     if (!emailvalidate(email)) return res.status(203).json({ message: 'invalid email format' });
     let userExist = await Client.findOne({ email })
@@ -28,8 +27,7 @@ const register = async (req, res) => {
     await newClient.save();
     res.status(201).json({ message: `user registered` })
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: `Error -> ${error}` })
+    res.status(500).json({ message: `Error -> ${error.message}` })
   }
 }
 
@@ -42,12 +40,10 @@ const login = async (req, res) => {
     if (!isMatch) return res.status(403).json({ message: 'invalid email or password' });
     if (user.isBlocked) return res.status(203).json({ blocked: true });
     const token = jwt.sign({ id: user._id, name: user.username, client: true }, process.env.SECRET);
-    // console.log(token);
     res.status(202)
       .json({ message: 'login successful', token })
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: `Error -> ${error}` })
+    res.status(500).json({ message: `Error -> ${error.message}` })
   }
 }
 
@@ -57,8 +53,7 @@ const checkVerification = async (req, res) => {
     if (!client.verified) return res.status(202).json({ messsage: false })
     res.status(202).json({ message: true })
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: `Error -> ${error}` })
+    res.status(500).json({ message: `Error -> ${error.message}` })
   }
 }
 
@@ -67,8 +62,7 @@ const deleteclient = async (req, res) => {
     await Client.findByIdAndDelete(req.params.id);
     res.status(200).json("client deleted");
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: `Error -> ${error}` });
+    res.status(500).json({ message: `Error -> ${error.message}` });
   }
 }
 
@@ -78,7 +72,6 @@ const getClientDetail = async (req, res) => {
       if (!user) return res.status(404).json('user not found');
       res.status(200).json(user);
   } catch (error) {
-      console.log(error);
       res.status(500).json({ message: `Error -> ${error.message}` })
   }
 }
@@ -131,8 +124,7 @@ const getClientBookings = async (req, res) => {
     ])
     res.status(200).json(list)
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: `Error -> ${error}` });
+    res.status(500).json({ message: `Error -> ${error.message}` });
   }
 }
 
@@ -184,7 +176,6 @@ const getBookingsPagination = async (req, res) => {
     ])
     const total = data.length;
     const list = data.slice(skip, skip + size);
-    // console.log(list);
     res.json({
       records: list,
       total,
@@ -192,8 +183,7 @@ const getBookingsPagination = async (req, res) => {
       size
     })
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: `Error -> ${error}` });
+    res.status(500).json({ message: `Error -> ${error.message}` });
   }
 }
 
@@ -203,8 +193,7 @@ const getData = async (req, res) => {
     if (!client) return res.status(404).json('client not found');
     res.status(200).json(client.earnings)
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: `Error -> ${error}` });
+    res.status(500).json({ message: `Error -> ${error.message}` });
   }
 }
 
@@ -216,8 +205,7 @@ const changeBookingStatus = async (req, res) => {
       }
     })
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: `Error -> ${error}` });
+    res.status(500).json({ message: `Error -> ${error.message}` });
   }
 }
 
@@ -276,7 +264,7 @@ const cancelledBookings = async (req, res) => {
     if (details.length===0) return res.status(203).json('no cancellations');
     res.status(200).json(details);
   } catch (error) {
-
+    res.status(500).json({ message: `Error -> ${error.message}` });
   }
 }
 

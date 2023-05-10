@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Flex, Heading, TableContainer, Table, Tbody, Td, Th, Thead, Tr, chakra, Button, Switch } from "@chakra-ui/react";
+import { Box, Flex, Heading, Center, Link, TableContainer, Table, Tbody, Td, Th, Thead, Tr, chakra, Button, Switch } from "@chakra-ui/react";
 import { TriangleDownIcon, TriangleUpIcon } from '@chakra-ui/icons'
 import { useTable, useSortBy } from 'react-table'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { FaTrash } from 'react-icons/fa'
 import axios from '../../../utils/axios'
+import { adminInstance } from '../../../utils/axios'
+
 import { getAllClients } from '../../../utils/API'
 import { DELETE_CLIENT } from '../../../utils/API'
 import { blockClient } from '../../../utils/API';
@@ -12,14 +14,24 @@ import { verifyClient } from '../../../utils/API';
 import toast, { Toaster } from "react-hot-toast";
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+const LIMIT = 10;
+
+const totalPages = (total, limit) => {
+    const pages = [];
+    for (let i = 1; i <= parseInt(total / limit); i++) {
+        pages.push(i);
+    }
+    return pages;
+}
 const Main = () => {
     const navigate = useNavigate()
     const [userList, setData] = useState([]);
+    const [totalUsers, setTotalUsers] = useState(0)
+    const [activePage, setActivePage] = useState(1);
     const users = async () => {
-        const token = localStorage.getItem('adminToken')
-        await axios.get(getAllClients, { headers: { 'Authorization': `Bearer ${token}` } }).then((res) => {
+        await adminInstance.get(`${getAllClients}?page=${activePage}&size=${LIMIT}`).then((res) => {
             // console.log(res);
-            setData(res.data.clients);
+            setData(res.data.records);
 
         }).catch((err) => {
             console.log(`error=> ${err.message}`)
@@ -47,8 +59,7 @@ const Main = () => {
             confirmButtonText: 'Yes, delete it!'
         }).then(async (result) => {
             if (result.isConfirmed) {
-                const token = localStorage.getItem('adminToken');
-                await axios.delete(`${DELETE_CLIENT}/${id}`, { headers: { 'Authorization': `Bearer ${token}` } }).then((res) => {
+                await adminInstance.delete(`${DELETE_CLIENT}/${id}`).then((res) => {
                 }).catch((err) => {
                     console.log(`error=> ${err.message}`)
                 })
@@ -57,32 +68,91 @@ const Main = () => {
         })
 
     }
-    const handleVerification = async (id,status) => {
-            const token = localStorage.getItem('adminToken')
-            await axios.get(`${verifyClient}/${id}`, { headers: { 'Authorization': `Bearer ${token}` } }).then((res) => {
-                status ? toast.error('client unverifed!') : toast.success('client verifed! ')
+    const handleVerification = async (id, status) => {
+        await adminInstance.get(`${verifyClient}/${id}`).then((res) => {
+            status ? toast.error('client unverifed!') : toast.success('client verifed! ')
 
-            }).catch((err) => {
-                console.log(`error=> ${err.message}`)
-            })
+        }).catch((err) => {
+            console.log(`error=> ${err.message}`)
+        })
     }
-    const handleBlock = async (id,status) => {
+    const handleBlock = async (id, status) => {
         console.log(id);
-            const token = localStorage.getItem('adminToken')
-            await axios.get(`${blockClient}/${id}`, { headers: { 'Authorization': `Bearer ${token}` } }).then((res) => {
-                status ? toast.success('client unblocked!'):toast.error('client blocked!') 
+        await adminInstance.get(`${blockClient}/${id}`).then((res) => {
+            status ? toast.success('client unblocked!') : toast.error('client blocked!')
 
-                
-            }).catch((err) => {
-                console.log(`error=> ${err.message}`)
-            })
+
+        }).catch((err) => {
+            console.log(`error=> ${err.message}`)
+        })
     }
 
-   
+    const pageArray = totalPages(totalUsers, LIMIT);
+    let pagesToShow = pageArray;
+    if (pageArray.length > 7) {
+        pagesToShow = pageArray.slice(activePage - 4, activePage + 3);
+        if (activePage < 5) {
+            pagesToShow = pageArray.slice(0, 7);
+        } else if (activePage > pageArray.length - 4) {
+            pagesToShow = pageArray.slice(pageArray.length - 7);
+        }
+    }
 
     return (
         <>
             <TableContainer p={10} bg={'chakra-body-bg'}>
+                <Center>
+
+
+                    <Box >
+
+
+
+                        <nav aria-label="Page navigation example">
+                            <ul className="pagination">
+                                {activePage !== 1 && <li className="page-item"
+                                    onClick={() => setActivePage(activePage - 1)}
+                                >
+                                    <Link className="page-link"
+                                        // to="javascript:void(null)"
+                                        to="#"
+                                        aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                        <span className="sr-only">Previous</span>
+                                    </Link>
+                                </li>}
+                                {totalPages(totalUsers, LIMIT).map(pageNo =>
+                                    <li className={`page-item ${pageNo === activePage ? `active` : ``}`} key={pageNo}
+                                        onClick={() => setActivePage(pageNo)}
+                                    >
+                                        <Link className="page-link"
+                                            // to="javascript:void(null)"
+                                            to="#"
+                                        >
+                                            {pageNo}</Link>
+                                    </li>
+                                )}
+                                {activePage !== parseInt(totalUsers / LIMIT) && <li className="page-item"
+                                    onClick={() => setActivePage(activePage + 1)}
+                                >
+                                    <Link className="page-link"
+                                        // href="javascript:void(null)"
+                                        to="#"
+                                        aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                        <span className="sr-only">Next</span>
+                                    </Link>
+                                </li>}
+                            </ul>
+                        </nav>
+
+
+
+
+                    </Box>
+
+
+                </Center>
                 <Table variant='simple'>
                     <Thead>
                         <Tr fontStyle={'italic'}>
@@ -107,7 +177,7 @@ const Main = () => {
                                                 colorScheme={elem?.verified ? 'green' : null}
                                                 size="sm"
                                                 isChecked={elem?.verified}
-                                                onChange={() => handleVerification(elem._id,elem?.verified)}
+                                                onChange={() => handleVerification(elem._id, elem?.verified)}
                                             />
                                         </Td>
 
@@ -115,7 +185,7 @@ const Main = () => {
                                             colorScheme={elem.status ? 'green' : 'red'}
                                             size="sm"
                                             isChecked={elem.status}
-                                            onChange={() => handleBlock(elem._id,elem.status)}
+                                            onChange={() => handleBlock(elem._id, elem.status)}
                                         /></Td>
                                         {/* <Td> <Button onClick={() => userProfile(elem._id)} >
                                             <FaArrowCircleRight color={'blue'} />
@@ -127,7 +197,7 @@ const Main = () => {
                         }
                     </Tbody>
                 </Table>
-                <Toaster/>
+                <Toaster />
             </TableContainer>
         </>
     )

@@ -1,23 +1,15 @@
-// WRAP SEARCH CONTENT 
-
-import { Navigate } from "react-router-dom";
+import { newSearch } from "../../redux/searchSlice";
 import store from "../../redux/store";
-import jwtDecode from "jwt-decode";
-import { login } from "../../redux/userSlice";
 
-export default function AuthorizeUser({children}) {
-    const token = localStorage.getItem('userToken');
-    if(!token){
-        return <Navigate to={'/login'} />
-    }else{
-        const decode = jwtDecode(token);
-        store.dispatch(login({
-            user:decode.name,
-            mobile:decode.mobile,
-            token
-        }))
-        return children;
-    }
-    
+export default function PersistRefresh({children}) {
+    const item = JSON.parse(localStorage.getItem('search'))
+    item.dates[0].startDate=new Date(item.dates[0].startDate)
+    item.dates[0].endDate=new Date(item.dates[0].endDate)
+        store.dispatch(newSearch({ 
+            destination:item.city, 
+            dates:item.dates, 
+            options:item.options 
+        }));
+    return children
 }
 

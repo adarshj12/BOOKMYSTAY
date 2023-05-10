@@ -19,24 +19,22 @@ import {
     useColorModeValue,
 } from '@chakra-ui/react';
 import axios from '../../../utils/axios'
+import {adminInstance} from '../../../utils/axios'
+
 import { UPDATE_USER } from '../../../utils/API'
 import Swal from 'sweetalert2';
 import { useLocation } from 'react-router-dom';
 import toast, { Toaster } from "react-hot-toast";
-const TransitionExample = () => {
+const TransitionExample = ({user}) => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const location = useLocation();
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('')
-    const [mobile, setMobile] = useState('')
-    const [password, setPassword] = useState('')
-    const [cpassword, setCPassword] = useState('')
+    const [name, setName] = useState(user.username);
+    const [email, setEmail] = useState(user.email)
+    const [mobile, setMobile] = useState(user.mobile)
 
     const [nameError, setNameError] = useState(false);
     const [emailError, setEmailError] = useState(false)
     const [mobileError, setMobileError] = useState(false)
-    const [passwordError, setPasswordError] = useState(false)
-    const [cpasswordError, setCPasswordError] = useState(false)
 
 
 
@@ -67,48 +65,34 @@ const TransitionExample = () => {
         }
     }
 
-    const handlePasswordChange = (value) => {
-        if (!value.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/)) {
-            setPasswordError(true)
-        } else {
-            setPasswordError(false)
-            setPassword(value);
-        }
-    }
-
-    const handleCPasswordChange = (value) => {
-        if (value !== password) {
-            setCPasswordError(true)
-        } else {
-            setCPasswordError(false)
-            setCPassword(value);
-        }
-    }
+    
 
 
     const update = async () => {
-        if (nameError || emailError || mobileError || passwordError || cpasswordError||name==''||email==''||password==''||mobile==''||cpassword=='') {
+        toast.success(name,email,mobile)
+        onClose()
+        if (nameError || emailError || mobileError ||name==''||email==''||mobile=='') {
             toast.error('form not completed')
         } else {
-            const token = localStorage.getItem('adminToken');
+            const token = localStorage.getItem('userToken');
             const body={
                 username:name,
                 email,
                 mobile,
-                password
             }
-            await axios.put(`${UPDATE_USER}/${location.state.data}`,body, { headers: { 'Authorization': `Bearer ${token}` } }).then((res) => {
+            await adminInstance.put(`${UPDATE_USER}/${location.state.data}`,body).then((res) => {
                 Swal.fire(
                     'User Updated!',
                     `${name} has been updated!`,
                     'success'
                 )
-                onClose()
+                
             }).catch((err) => {
                 console.log(`error=> ${err.message}`)
             })
         }
     }
+    
     return (
         <>
             <Button mt={50} w={200} backgroundColor={'black.400'} onClick={onOpen}>UPDATE</Button>
@@ -120,14 +104,14 @@ const TransitionExample = () => {
             >
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader position={'text-center'}>Select Rooms</ModalHeader>
+                    <ModalHeader position={'text-center'}>update user</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
 
 
 
                         <Flex
-                            minH={'100vh'}
+                            minH={'250px'}
                             align={'center'}
                             justify={'center'}
                             bg={useColorModeValue('gray.50', 'gray.800')}>
@@ -149,6 +133,7 @@ const TransitionExample = () => {
                                     <Input
                                         placeholder="UserName"
                                         _placeholder={{ color: 'gray.500' }}
+                                        defaultValue={name}
                                         onChange={(e) => handleNameChange(e.target.value)}
                                         type="text"
                                     />
@@ -159,6 +144,7 @@ const TransitionExample = () => {
                                     <Input
                                         placeholder="user email"
                                         _placeholder={{ color: 'gray.500' }}
+                                        defaultValue={email}
                                         onChange={(e) => handleEmailChange(e.target.value)}
                                         type="email"
                                     />
@@ -169,31 +155,13 @@ const TransitionExample = () => {
                                     <Input
                                         placeholder="mobile number"
                                         _placeholder={{ color: 'gray.500' }}
+                                        defaultValue={mobile}
                                         onChange={(e) => handleMobileChange(e.target.value)}
                                         type="number"
                                     />
                                     {mobileError && <Text color={'red'}>Enter a valid Mobile Number excluding +91</Text>}
                                 </FormControl>
-                                <FormControl id="password" isRequired>
-                                    <FormLabel>Password</FormLabel>
-                                    <Input
-                                        placeholder="password"
-                                        _placeholder={{ color: 'gray.500' }}
-                                        onChange={(e) => handlePasswordChange(e.target.value)}
-                                        type="password"
-                                    />
-                                    {passwordError && <Text color={'red'}>Password should contain 8 to 15 characters with at least one lowercase letter, one uppercase letter, one numeric digit, and one special character</Text>}
-                                </FormControl>
-                                <FormControl id="cpassword" isRequired>
-                                    <FormLabel>Confirm Password</FormLabel>
-                                    <Input
-                                        placeholder="confirm password"
-                                        _placeholder={{ color: 'gray.500' }}
-                                        onChange={(e) => handleCPasswordChange(e.target.value)}
-                                        type="password"
-                                    />
-                                    {cpasswordError && <Text color={'red'}>Password and Confirm Password does not Match</Text>}
-                                </FormControl>
+                                
                                 <Stack spacing={6} direction={['column', 'row']}>
                                     <Button
                                         bg={'red.400'}
@@ -227,6 +195,7 @@ const TransitionExample = () => {
 
                     </ModalBody>
                 </ModalContent>
+                <Toaster/>
             </Modal>
         </>
     )

@@ -8,7 +8,6 @@ import {
   Image,
   Stack,
   Text,
-  Square,
   Box,
   useColorModeValue,
 } from '@chakra-ui/react';
@@ -24,7 +23,6 @@ import Searchbar from './SearchBar'
 import toast, { Toaster } from "react-hot-toast";
 import { newSearch } from '../../../redux/searchSlice';
 const SearchItem = ({ data }) => {
-  // console.log('data props',data)
   const dispatch = useDispatch()
   const navigate = useNavigate();
   const [destination, setDestination] = useState(useSelector(state => state.search.city));
@@ -51,7 +49,6 @@ const SearchItem = ({ data }) => {
   })
   const color1 = useColorModeValue('white', 'gray.900');
   const color2 = useColorModeValue('white', 'gray.900');
-  const color3 = useColorModeValue('gray.700', 'gray.400');
   const color4 = useColorModeValue('gray.50', 'gray.800');
   useEffect(() => {
     places()
@@ -74,6 +71,9 @@ const SearchItem = ({ data }) => {
     } else {
 
       dispatch(newSearch({ destination, dates, options }));
+      localStorage.setItem('search', JSON.stringify({
+        destination, dates, options
+      }))
       navigate('/search')
     }
   }
@@ -192,7 +192,7 @@ const SearchItem = ({ data }) => {
                       py={1}
                       bg={color4}
                       fontWeight={'400'}>
-                      9.5
+                      {/* 9.5 */}
                     </Badge>
                   </Stack>
 
@@ -210,7 +210,8 @@ const SearchItem = ({ data }) => {
                       rounded={'full'}
                       bg={'blue.400'}
                       color={'white'}
-                      onClick={() => navigate('/hotel', { state: { data: item._id } })}
+                      // onClick={() => navigate('/hotel', { state: { data: item._id } })}
+                      onClick={() => navigate(`/hotel/${item._id}`)}
                       boxShadow={
                         '0px 1px 25px -5px rgb(66 153 225 / 48%), 0 10px 10px -5px rgb(66 153 225 / 43%)'
                       }

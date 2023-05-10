@@ -15,6 +15,8 @@ import {
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import axios from '../../../utils/axios'
+import {adminInstance} from '../../../utils/axios'
+
 import { CITY_IMAGE } from '../../../utils/API';
 import { Toaster, toast } from 'react-hot-toast';
 
@@ -33,7 +35,7 @@ const BasicUsage = ({setLoading}) => {
         const formData=new FormData();
         formData.append('city',city);
         formData.append('image',image)
-        await axios.post(CITY_IMAGE,formData,{ headers: { 'Authorization': `Bearer ${token}` } }).then(()=>setLoading(false)).catch(err=>toast.error(err.message))
+        await adminInstance.post(CITY_IMAGE,formData).then(()=>setLoading(false)).catch(err=>toast.error(err.message))
       }
     return (
         <>

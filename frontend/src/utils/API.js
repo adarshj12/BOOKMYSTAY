@@ -1,4 +1,5 @@
 export const baseUrl = "http://localhost:4000/api/v1";
+export const adminBaseUrl = "http://localhost:4000/api/v1/admin";
 
 
 //USER SIDE URLS==>
@@ -48,33 +49,32 @@ export const GET_EARNINGS ='/client/earnings'
 export const GET_CLIENT_DETAIL='/client/detail'
 export const CHANGE_STATUS ='/client/bookingstatus' 
 export const CANCELLATIONS ='/client/cancellations'
+
 //ADMIN SIDE URLS==>
 
-export const adminLogin='/admin/login'
-export const verifyAdmin = '/admin/verify'
-export const getAllUsers ='/admin/getUsers'
-export const getAllClients ='/admin/getClients'
+export const adminLogin='/login'
+export const verifyAdmin = '/verify'
+export const getAllUsers ='/getUsers'
+export const getAllClients ='/getClients'
 
-export const blockClient ='/admin/blockClient'
-export const verifyClient ='/admin/verifyClient'
+export const blockClient ='/blockClient'
+export const verifyClient ='/verifyClient'
 
-export const blockUser ='/admin/blockUser'
-export const GET_ALL_PROPERTIES='/admin/getProperties'
-export const GET_USER ='/admin/getUser'
-export const DELETE_USER='/admin/deleteuser'
-
-export const UPDATE_USER='/admin/updateuser'
-export const DELETE_CLIENT='/admin/deleteclient'
-
-export const GET_ALL_BOOKINGS='/admin/getAllBookings'
-export const SHOW_PAYMENT_STATUS='/admin/payments'
-export const PAY_CLIENT='/admin/payclient'
-export const DASHBOARD ='/admin/dashboard'
-export const ADMIN_GET_BOOKINGS='/admin/getBookings'
-export const ADMIN_BANNER='/admin/banner'
-export const CHANGE_BANNER='/admin/updatebanner'
-export const CITY_IMAGE='/admin/city'
-export const ADMIN_CITIES='/admin/cities'
+export const blockUser ='/blockUser'
+export const GET_ALL_PROPERTIES='/getProperties'
+export const GET_USER ='/getUser'
+export const DELETE_USER='/deleteuser'
+export const UPDATE_USER='/updateuser'
+export const DELETE_CLIENT='/deleteclient'
+export const GET_ALL_BOOKINGS='/getAllBookings'
+export const SHOW_PAYMENT_STATUS='/payments'
+export const PAY_CLIENT='/payclient'
+export const DASHBOARD ='/dashboard'
+export const ADMIN_GET_BOOKINGS='/getBookings'
+export const ADMIN_BANNER='/banner'
+export const CHANGE_BANNER='/updatebanner'
+export const CITY_IMAGE='/city'
+export const ADMIN_CITIES='/cities'
 
 // CHAT
 

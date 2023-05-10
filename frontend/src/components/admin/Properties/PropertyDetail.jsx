@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Box, Flex, Grid, FormControl, FormLabel, Input, Button, Text, VStack, Image, Container, AspectRatio, Stack, Heading, HStack } from "@chakra-ui/react";
 import { gethotel } from '../../../utils/API'
 import axios from '../../../utils/axios'
+import {adminInstance} from '../../../utils/axios'
+
 import Swal from 'sweetalert2';
 import SliderComponent from './ImageSlider'
 
@@ -15,7 +17,7 @@ const SingleProperty = () => {
 
   const getDetails = async () => {
     try {
-      await axios.get(`${gethotel}/${location.state.data}`, { headers: { 'Content-Type': 'application/json' } }).then((res) => {
+      await axios.get(`${gethotel}/${location.state.data}`).then((res) => {
         if (res.status === 200) {
           setHotel(res.data)
         } else {

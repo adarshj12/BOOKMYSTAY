@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react';
 
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import axios from '../../utils/axios'
+import axios, { adminInstance } from '../../utils/axios'
 import { adminLogin } from '../../utils/API';
 import admImage from '../../assets/admin.jpg'
 import { useDispatch } from 'react-redux';
@@ -40,7 +40,7 @@ const AdminLogin = () => {
             password
         }
         try {
-            await axios.post(adminLogin, body, { headers: { "Content-Type": "application/json" } }).then((res) => {
+            await adminInstance.post(adminLogin, body, { headers: { "Content-Type": "application/json" } }).then((res) => {
                 console.log(res);
                 // console.log(JSON.stringify(res));
                 if (res.status === 202) {

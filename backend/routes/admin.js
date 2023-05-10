@@ -1,10 +1,36 @@
 const express = require('express');
-const { login, getAllUsers, getAllClients, blockClient, verifyClient, blockUsers, getAllProperties, payments, payclient, dashboard, addBanner, updateBanner, addCityImage, checkout, verification, paytoClientDetails } = require('../controllers/adminController');
+const { 
+    login, 
+    getAllUsers, 
+    getAllClients, 
+    blockClient, 
+    verifyClient, 
+    blockUsers, 
+    getAllProperties, 
+    payments, 
+    dashboard, 
+    addBanner, 
+    updateBanner, 
+    addCityImage, 
+    checkout, 
+    verification, 
+    paytoClientDetails 
+} = require('../controllers/adminController');
 require('dotenv').config()
 const router = express.Router();
 const { verifyAdmin } = require('../utils/verifyToken');
-const { deleteProperty, getAllBookings, getAllBookingsWRTDuration } = require('../controllers/hotelController');
-const { getUserDetail, deleteuser, updateUser, banner, cities } = require('../controllers/userController');
+const { 
+    deleteProperty, 
+    getAllBookings, 
+    getAllBookingsWRTDuration 
+} = require('../controllers/hotelController');
+const { 
+    getUserDetail, 
+    deleteuser, 
+    updateUser, 
+    banner, 
+    cities 
+} = require('../controllers/userController');
 const { deleteclient } = require('../controllers/clientController');
 const multer = require('../utils/multer');
 

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Flex, Heading, Table, Text, Thead, Tbody, Tr, Th, Td, Spacer,Stack, Center, VStack, HStack, Grid } from '@chakra-ui/react';
+import { Box, Flex, Heading, Table, Text, Thead, Tbody, Tr, Th, Td, Spacer, Stack, Center, VStack, HStack, Grid } from '@chakra-ui/react';
 import { FaRupeeSign, FaUsers } from 'react-icons/fa';
 import { TbBuildingBank } from 'react-icons/tb';
 import Piechart from './Piechart'
 import LineGraph from './LineGraph';
 import { DASHBOARD } from '../../../utils/API';
-import axios from '../../../utils/axios'
+import axios, { adminInstance } from '../../../utils/axios'
 import { Toaster, toast } from 'react-hot-toast';
 
 const Main = () => {
@@ -17,7 +17,7 @@ const Main = () => {
   const [total, settotal] = useState(0)
   const token = localStorage.getItem('adminToken');
   const dashboardData = async () => {
-    await axios.get(DASHBOARD, { headers: { 'Authorization': `Bearer ${token}` } }).then(res => {
+    await adminInstance.get(DASHBOARD).then(res => {
       console.log(res.data.payment);
       console.log(res.data.revenue);
       setPayment(res.data.payment);
@@ -73,25 +73,44 @@ const Main = () => {
             </Stack>
           </Box>
         </Grid>
-
-        <Grid mt={8} templateColumns={{ base: '1fr', md: '1fr 1fr' }} gap={4}>
-          <Box bg="white" p={4} rounded="lg" shadow="md">
-            <Stack direction="column" spacing={2}>
+        <Box maxW="100%" overflowX="auto">
+          <Grid
+            templateColumns={['1fr', '1fr', '1fr 1fr']}
+            gap={4}
+            mt={[4, 8, 12]}
+            px={[4, 8]}
+          >
+            <Box
+              bg="white"
+              p={4}
+              rounded="lg"
+              shadow="md"
+              textAlign={['center', 'left']}
+              mb={[4, 0]}
+            >
               <Text fontWeight="extrabold">Payment Mode</Text>
               <Piechart payment={payment} />
-            </Stack>
-          </Box>
+            </Box>
 
-          <Box bg="white" p={4} rounded="lg" shadow="md">
-            <Stack direction="column" spacing={2}>
+            <Box
+              bg="white"
+              p={4}
+              rounded="lg"
+              shadow="md"
+              textAlign={['center', 'right']}
+            >
               <Text fontWeight="extrabold">Revenue</Text>
               <LineGraph revenue={revenue} />
-            </Stack>
-          </Box>
-        </Grid>
+            </Box>
+          </Grid>
+        </Box>
+
+
+
 
         <Toaster />
       </Box>
+
 
     </>
   )

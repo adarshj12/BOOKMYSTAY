@@ -1,12 +1,10 @@
-import { Box, Link, Heading, Table, Tbody, Td, Th, Thead, Tr, TableContainer, chakra, Button, Container, ButtonGroup, Center, Text, HStack, Select, Spacer } from "@chakra-ui/react";
-import { TriangleDownIcon, TriangleUpIcon } from '@chakra-ui/icons'
-import { useTable, useSortBy } from 'react-table'
+import { Box, Link, Table, Tbody, Td, Th, Thead, Tr, TableContainer,  Center,HStack, Select, Spacer } from "@chakra-ui/react";
 import { FaTrash, FaArrowCircleRight } from 'react-icons/fa'
 import React, { useState, useEffect } from 'react'
 import { GET_ALL_BOOKINGS } from '../../../utils/API'
 import { ADMIN_GET_BOOKINGS } from '../../../utils/API'
-import axios from '../../../utils/axios'
-import jwtDecode from "jwt-decode";
+import axios from '../../../utils/axios' 
+import {adminInstance} from '../../../utils/axios' 
 import { useNavigate } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
 
@@ -27,17 +25,14 @@ const totalPages = (total, limit) => {
 const BookingList = () => {
     const navigate = useNavigate()
     const [bookings, setBookings] = useState([])
-    const [details, setDetails] = useState([])
     const [totalUsers, setTotalUsers] = useState(0)
     const [activePage, setActivePage] = useState(1);
     const [duration, setDuration] = useState('all')
 
     const token = localStorage.getItem('adminToken');
-    const decode = jwtDecode(token);
 
     const list = async (e) => {
-        await axios.get(`${ADMIN_GET_BOOKINGS}?page=${activePage}&size=${LIMIT}&duration=${e?e:'all'}`, { headers: { 'Authorization': `Bearer ${token}` } }).then(res => {
-            // console.log(res.data.records);
+        await adminInstance.get(`${ADMIN_GET_BOOKINGS}?page=${activePage}&size=${LIMIT}&duration=${e?e:'all'}`).then(res => {
             setBookings(res.data.records);
             setTotalUsers(res.data.total)
         }).catch(err => {
@@ -50,11 +45,10 @@ const BookingList = () => {
             }
         })
     }
-    // console.log(list)
 
     useEffect(() => {
         list()
-    }, [])
+    }, [activePage])
 
     const handleOptionChange = async (e) => {
         console.log(e);
@@ -99,7 +93,6 @@ const BookingList = () => {
                                         onClick={() => setActivePage(activePage - 1)}
                                     >
                                         <Link className="page-link"
-                                            // to="javascript:void(null)"
                                             to="#"
                                             aria-label="Previous">
                                             <span aria-hidden="true">&laquo;</span>
@@ -108,10 +101,13 @@ const BookingList = () => {
                                     </li>}
                                     {totalPages(totalUsers, LIMIT).map(pageNo =>
                                         <li className={`page-item ${pageNo === activePage ? `active` : ``}`} key={pageNo}
-                                            onClick={() => setActivePage(pageNo)}
+                                            onClick={() => {
+                                                setActivePage(pageNo); 
+                                                // list()
+                                            }
+                                            }
                                         >
                                             <Link className="page-link"
-                                                // to="javascript:void(null)"
                                                 to="#"
                                             >
                                                 {pageNo}</Link>
@@ -121,7 +117,6 @@ const BookingList = () => {
                                         onClick={() => setActivePage(activePage + 1)}
                                     >
                                         <Link className="page-link"
-                                            // href="javascript:void(null)"
                                             to="#"
                                             aria-label="Next">
                                             <span aria-hidden="true">&raquo;</span>

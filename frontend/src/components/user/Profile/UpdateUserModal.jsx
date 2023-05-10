@@ -23,22 +23,17 @@ import { UPDATE_USER } from '../../../utils/API'
 import Swal from 'sweetalert2';
 import { useLocation } from 'react-router-dom';
 import toast, { Toaster } from "react-hot-toast";
-import { faMobileAlt } from '@fortawesome/free-solid-svg-icons';
 
 const TransitionExample = ({user}) => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const location = useLocation();
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('')
-    const [mobile, setMobile] = useState('')
-    const [password, setPassword] = useState('')
-    const [cpassword, setCPassword] = useState('')
+    const [name, setName] = useState(user.username);
+    const [email, setEmail] = useState(user.email)
+    const [mobile, setMobile] = useState(user.mobile)
 
     const [nameError, setNameError] = useState(false);
     const [emailError, setEmailError] = useState(false)
     const [mobileError, setMobileError] = useState(false)
-    const [passwordError, setPasswordError] = useState(false)
-    const [cpasswordError, setCPasswordError] = useState(false)
 
 
 
@@ -69,27 +64,13 @@ const TransitionExample = ({user}) => {
         }
     }
 
-    const handlePasswordChange = (value) => {
-        if (!value.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/)) {
-            setPasswordError(true)
-        } else {
-            setPasswordError(false)
-            setPassword(value);
-        }
-    }
-
-    const handleCPasswordChange = (value) => {
-        if (value !== password) {
-            setCPasswordError(true)
-        } else {
-            setCPasswordError(false)
-            setCPassword(value);
-        }
-    }
+    
 
 
     const update = async () => {
-        if (nameError || emailError || mobileError || passwordError || cpasswordError||name==''||email==''||password==''||mobile==''||cpassword=='') {
+        toast.success(name,email,mobile)
+        onClose()
+        if (nameError || emailError || mobileError ||name==''||email==''||mobile=='') {
             toast.error('form not completed')
         } else {
             const token = localStorage.getItem('userToken');
@@ -97,30 +78,20 @@ const TransitionExample = ({user}) => {
                 username:name,
                 email,
                 mobile,
-                password
             }
-            await axios.put(`${UPDATE_USER}/${location.state.data}`,body, { headers: { 'Authorization': `Bearer ${token}` } }).then((res) => {
+            await axios.put(`/users${UPDATE_USER}/${location.state.data}`,body, { headers: { 'Authorization': `Bearer ${token}` } }).then((res) => {
                 Swal.fire(
                     'User Updated!',
                     `${name} has been updated!`,
                     'success'
                 )
-                onClose()
+                
             }).catch((err) => {
                 console.log(`error=> ${err.message}`)
             })
         }
     }
-    const setDetails=()=>{
-        setName(user.username);
-        setEmail(user.email);
-        setMobile(user.mobile);
-        setPassword(user.password);
-    }
-
-    useEffect(()=>{
-        setDetails()
-    })
+    
     return (
         <>
             <Button mt={50} w={200} backgroundColor={'black.400'} onClick={onOpen}>UPDATE</Button>
@@ -132,14 +103,14 @@ const TransitionExample = ({user}) => {
             >
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader position={'text-center'}>Select Rooms</ModalHeader>
+                    <ModalHeader position={'text-center'}>update user</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
 
 
 
                         <Flex
-                            minH={'100vh'}
+                            minH={'250px'}
                             align={'center'}
                             justify={'center'}
                             bg={useColorModeValue('gray.50', 'gray.800')}>
@@ -183,34 +154,13 @@ const TransitionExample = ({user}) => {
                                     <Input
                                         placeholder="mobile number"
                                         _placeholder={{ color: 'gray.500' }}
-                                        defaultValue={faMobileAlt}
+                                        defaultValue={mobile}
                                         onChange={(e) => handleMobileChange(e.target.value)}
                                         type="number"
                                     />
                                     {mobileError && <Text color={'red'}>Enter a valid Mobile Number excluding +91</Text>}
                                 </FormControl>
-                                <FormControl id="password" isRequired>
-                                    <FormLabel>Password</FormLabel>
-                                    <Input
-                                        placeholder="password"
-                                        _placeholder={{ color: 'gray.500' }}
-                                        defaultValue={password}
-                                        onChange={(e) => handlePasswordChange(e.target.value)}
-                                        type="password"
-                                    />
-                                    {passwordError && <Text color={'red'}>Password should contain 8 to 15 characters with at least one lowercase letter, one uppercase letter, one numeric digit, and one special character</Text>}
-                                </FormControl>
-                                <FormControl id="cpassword" isRequired>
-                                    <FormLabel>Confirm Password</FormLabel>
-                                    <Input
-                                        placeholder="confirm password"
-                                        _placeholder={{ color: 'gray.500' }}
-                                        defaultValue={password}
-                                        onChange={(e) => handleCPasswordChange(e.target.value)}
-                                        type="password"
-                                    />
-                                    {cpasswordError && <Text color={'red'}>Password and Confirm Password does not Match</Text>}
-                                </FormControl>
+                                
                                 <Stack spacing={6} direction={['column', 'row']}>
                                     <Button
                                         bg={'red.400'}
@@ -244,6 +194,7 @@ const TransitionExample = ({user}) => {
 
                     </ModalBody>
                 </ModalContent>
+                <Toaster/>
             </Modal>
         </>
     )

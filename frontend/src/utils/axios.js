@@ -1,5 +1,5 @@
 import axios from "axios";
-import { baseUrl } from "./API";
+import { adminBaseUrl, baseUrl } from "./API";
 
 
 const instance= axios.create({
@@ -7,5 +7,23 @@ const instance= axios.create({
     
 })
 
+const adminInstance=axios.create({
+    baseURL:adminBaseUrl
+})
+
+
+adminInstance.interceptors.request.use((config)=>{
+    const adminToken=localStorage.getItem('adminToken');
+    if(adminToken){
+        config.headers.Authorization=`Bearer ${adminToken}`
+    }
+    return config
+},(error)=>{
+    return Promise.reject(error)
+})
+
+
+
 
 export default instance
+export {adminInstance}

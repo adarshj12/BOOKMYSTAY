@@ -14,6 +14,8 @@ import {
     Input
 } from '@chakra-ui/react'
 import axios from '../../../utils/axios'
+import {adminInstance} from '../../../utils/axios'
+
 import { CHANGE_BANNER } from '../../../utils/API';
 import { useState } from 'react'
 import toast, { Toaster } from "react-hot-toast";
@@ -28,7 +30,7 @@ const BasicUsage = ({ id }) => {
         onClose()
         const formData=new FormData();
         formData.append('video',video)
-        await axios.put(`${CHANGE_BANNER}/${id}`,formData, { headers: { 'Authorization': `Bearer ${token}` } }).then(
+        await adminInstance.put(`${CHANGE_BANNER}/${id}`,formData).then(
         ).catch(err => toast.error(err.message))
     }
     return (

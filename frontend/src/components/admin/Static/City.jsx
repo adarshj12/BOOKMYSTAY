@@ -12,18 +12,23 @@ import {
 import Add from './CityModal'
 import { useEffect, useState } from 'react';
 import axios from '../../../utils/axios'
-import { CITIES } from '../../../utils/API';
+import {adminInstance} from '../../../utils/axios'
+
+import { ADMIN_CITIES } from '../../../utils/API';
 import Spinner from '../../../pages/HomeSpinner'
 export default function ProductSimple() {
   const [cities, setCities] = useState([])
   const token = localStorage.getItem('adminToken')
   const [loading, setLoading] = useState(false)
   const places = async () => {
-    await axios.get(CITIES, { headers: { 'Authorization': `Bearer ${token}` } }).then(res => setCities(res.data)).catch(err => console.log(`places fetch error : ${err.message}`))
+    await adminInstance.get(ADMIN_CITIES).then(res =>{
+      console.log(res.data)
+      setCities(res.data)
+    }).catch(err => console.log(`places fetch error : ${err.message}`))
   }
   useEffect(() => {
     places()
-  }, [places])
+  }, [])
   const color1 = useColorModeValue('white', 'gray.800')
   return (
     <>

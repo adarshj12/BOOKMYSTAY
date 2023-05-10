@@ -26,14 +26,14 @@ router.get('/',(req,res)=>{
 })
 
 router.post('/register',register);
+
 router.post('/login',login);
+
 router.get('/otp/:id',getOTP);
+
 router.get('/getuser/:id',verifyUser,getUserDetail);
+
 router.put('/updateuser/:id',verifyUser,updateUser);
-
-// router.post('/booking',booking)
-
-// router.post('/booking',getbookingDetails);
 
 router.post('/booking',bookingDetails);
 
@@ -45,7 +45,7 @@ router.post('/create-checkout-session',stripe_payment)
 
 router.post('/webhook', express.raw({type: 'application/json'}),stripe_webhook)
 
-router.get('/bookings/:id',verifyUser,getMyBookings)
+router.get('/bookings',verifyUser,getMyBookings)
 
 router.get('/booking/:id',verifyUser,getMyBookng)
 

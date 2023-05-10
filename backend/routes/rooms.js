@@ -2,7 +2,13 @@ const express = require('express');
 const router = express.Router();
 const multer = require('../utils/multer');
 const { verifyClient } = require('../utils/verifyToken');
-const { createRoom, updateRoom, deleteRoom, getRoom, getRooms } = require('../controllers/roomController');
+const { 
+    createRoom, 
+    updateRoom, 
+    deleteRoom, 
+    getRoom, 
+    getRooms 
+} = require('../controllers/roomController');
 
 
 router.post('/addroom/:hotelid',verifyClient,multer.array('image'),createRoom);

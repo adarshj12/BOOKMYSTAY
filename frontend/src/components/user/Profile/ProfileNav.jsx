@@ -13,10 +13,6 @@ const Navbar = () => {
       element: 'Bookings',
       path: '/profile/bookings'
     },
-    {
-      element: 'Profile',
-      path: '/profile/edit'
-    },
   ]
   return (
     <Box as="section">

@@ -12,10 +12,12 @@ import AuthorizeAdmin from './middlewares/adminPath/AdminAuth';
 import PublicRouteAdmin from './middlewares/adminPath/AdmnPublic';
 import AuthorizeUser from './middlewares/userPath/UserAuth';
 import PublicRouteUser from './middlewares/userPath/PublicPath';
+
 import LoaderSpinner from './pages/LoaderSpinner';
 import HomeSpinner from './pages/HomeSpinner';
 
 import Messenger from './pages/Messenger/Messenger'
+import PersistRefresh from './middlewares/userPath/searchPath';
 
 // ****************************************************** USER PAGES  ****************************************************** //
 
@@ -154,20 +156,24 @@ function App() {
         <Route path='/search'
           element={
             <PublicRouteUser>
+              {/* <PersistRefresh> */}
 
             <Suspense fallback={<LoaderSpinner />}>
               <List />
             </Suspense>
+              {/* </PersistRefresh> */}
             </PublicRouteUser>
           } />
-        <Route path='/hotel'
+        <Route path='/hotel/:id'
           element={
             <PublicRouteUser>
+              <PersistRefresh>
 
             <Suspense fallback={<LoaderSpinner />}>
               <Hotel />
 
             </Suspense>
+              </PersistRefresh>
             </PublicRouteUser>
           } />
 

@@ -1,4 +1,4 @@
-import { Table, Thead, Tbody, Tr, Th, Td, Avatar, Flex, Box, Heading, HStack, Button } from '@chakra-ui/react'
+import { Table, Thead, Tbody, Tr, Th, Td, Avatar, Flex, Box, Heading, HStack, Button, TableContainer } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { getAllProperties } from '../../../utils/API'
@@ -71,11 +71,10 @@ const AllProperty = () => {
 
     return (
         <>
-            <Box p={4} w={'full'}>
-                <Flex>
-                    <Box flex={1}>
-                        <Box bg="white" p={4} rounded="lg" shadow="md" mb={4}>
-                            <HStack justifyContent="space-between">
+        <TableContainer  bg={'chakra-body-bg'}>
+
+        
+                        <HStack justifyContent="space-between">
                                 <Heading size="md" mb={2}>
                                     All Properties
                                 </Heading>
@@ -120,10 +119,7 @@ const AllProperty = () => {
                                     }
                                 </Tbody>
                             </Table>
-                        </Box>
-                    </Box>
-                </Flex>
-            </Box>
+                            </TableContainer>
         </>
 
     );

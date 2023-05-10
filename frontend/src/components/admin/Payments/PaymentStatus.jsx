@@ -5,6 +5,7 @@ import { useTable, useSortBy } from 'react-table'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { FaTrash, FaAmazonPay } from 'react-icons/fa'
 import axios from '../../../utils/axios'
+import {adminInstance} from '../../../utils/axios'
 import { SHOW_PAYMENT_STATUS } from '../../../utils/API'
 import { PAY_CLIENT } from '../../../utils/API'
 import toast, { Toaster } from "react-hot-toast";
@@ -32,7 +33,7 @@ const Main = () => {
     const token = localStorage.getItem('adminToken')
     const payments = async () => {
 
-        await axios.get(`${SHOW_PAYMENT_STATUS}/${activePage}/${LIMIT}`, { headers: { 'Authorization': `Bearer ${token}` } }).then((res) => {
+        await adminInstance.get(`${SHOW_PAYMENT_STATUS}/${activePage}/${LIMIT}`).then((res) => {
             setPaymentStatus(res.data.records);
             setTotalUsers(res.data.total)
         }).catch((err) => {
@@ -58,7 +59,7 @@ const Main = () => {
             share,
             payid
         }
-        await axios.put(`${PAY_CLIENT}`, body, { headers: { 'Authorization': `Bearer ${token}` } }).then((res) => {
+        await adminInstance.put(`${PAY_CLIENT}`, body).then((res) => {
             // if(res.status===200)  toast.success('payment successful');
         }).catch(err => toast.error(err.message))
         const amount = share;

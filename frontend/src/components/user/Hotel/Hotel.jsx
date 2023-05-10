@@ -22,7 +22,7 @@ import RoomSelection from './RoomSelectionModal';
 import { setLastVisitedUrl } from '../../../redux/urlSlice';
 import Map from './LocationMap';
 import SliderComponent from './ImageSlider'
-import { useLocation, useNavigate, Navigate } from 'react-router-dom';
+import { useLocation, useNavigate, Navigate, useParams } from 'react-router-dom';
 import axios from '../../../utils/axios'
 import { gethotel } from '../../../utils/API'
 import { GET_HOTEL_ROOMS, HOTEL_RATING } from '../../../utils/API'
@@ -31,6 +31,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import toast, { Toaster } from "react-hot-toast";
 const Hotel = () => {
     const location = useLocation();
+    const params = useParams()
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const search = useSelector(state => state.search)
@@ -47,7 +48,7 @@ const Hotel = () => {
     const [titleCount, setTitleCount] = useState({})
     const [rating, setRating] = useState(0)
     const getDetails = async () => {
-        await axios.get(`${gethotel}/${location.state.data}`, { headers: { 'Content-Type': 'application/json' } }).then((res) => {
+        await axios.get(`${gethotel}/${params.id}`, { headers: { 'Content-Type': 'application/json' } }).then((res) => {
             if (res.status === 200) {
                 setHotel(res.data)
             } else {
@@ -63,7 +64,7 @@ const Hotel = () => {
     }
     const getRooms = async () => {
         //tokn send
-        await axios.get(`${GET_HOTEL_ROOMS}/${location.state.data}/${startDate}/${endDate}`, { headers: { 'Content-Type': 'application/json' } }).then((res) => {
+        await axios.get(`${GET_HOTEL_ROOMS}/${params.id}/${startDate}/${endDate}`, { headers: { 'Content-Type': 'application/json' } }).then((res) => {
             if (res.status === 200) {
                 // console.log(res.data);
                 const uniqueArr = res.data.filter((obj, index, self) => {
@@ -92,7 +93,7 @@ const Hotel = () => {
         })
     }
     const getRating = async () => {
-        await axios.get(`${HOTEL_RATING}/${location.state.data}`).then(res => {
+        await axios.get(`${HOTEL_RATING}/${params.id}`).then(res => {
             setRating(res.data[0].rating)
         })
     }
@@ -158,7 +159,7 @@ const Hotel = () => {
     // console.log(countDays(search.dates[0].startDate, search.dates[0].endDate));
     // console.log(typeof(countDays(search.dates[0].startDate, search.dates[0].endDate)));
     const numberOfDays = countDays(search.dates[0].startDate, search.dates[0].endDate);
-    // console.log(search.dates[0].startDate, search.dates[0].endDate);
+    console.log(search.dates[0].startDate, search.dates[0].endDate);
 
     const getDatesRange = (start, end) => {
         const date = new Date(start.getTime())
@@ -173,13 +174,6 @@ const Hotel = () => {
     }
     // console.log(getDatesRange(search.dates[0].startDate, search.dates[0].endDate));
     const dateRange = getDatesRange(search.dates[0].startDate, search.dates[0].endDate)
-
-    const iSAvailable = (roomId) => {
-        let result = rooms.filter(elem => elem._id === roomId);
-        const isFound = result[0].unavailableDates.includes(new Date(search.dates[0].startDate).getTime()) || result[0].unavailableDates.includes(new Date(search.dates[0].endDate).getTime())
-        console.log(isFound);
-        return !isFound;
-    }
 
     return (
         <>
@@ -269,7 +263,7 @@ const Hotel = () => {
                                         {
                                             user ?
                                                 <RoomSelection
-                                                    hotelid={location.state.data}
+                                                    hotelid={params.id}
                                                     roomid={item._id}
                                                     dateRange={dateRange}
                                                     address={hotel.address}

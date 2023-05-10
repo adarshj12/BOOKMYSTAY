@@ -10,8 +10,6 @@ const mongoose = require('mongoose');
 
 const createHotel = async (req, res) => {
     try {
-        console.log(req.files);
-        console.log(req.body);
         const clientid = req.params.id;
         const arr = [];
         for (const file of req.files) {
@@ -30,7 +28,6 @@ const createHotel = async (req, res) => {
         const savedHotel = await newHotel.save();
         res.status(200).json(savedHotel);
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
@@ -41,45 +38,37 @@ const getClientProperties = async (req, res) => {
         const list = await Hotel.find({ client });
         res.status(200).json(list)
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
 const deleteProperty = async (req, res) => {
     try {
-        console.log(req.params.id);
         await Hotel.findByIdAndDelete(req.params.id);
         res.status(200).json("hotel deleted")
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
 const getProperty = async (req, res) => {
     try {
-        // console.log(' hotel fg called '); 
         const data = await Hotel.findById(req.params.id);
         if (!data) return res.status(204).json({ message: 'not found' })
         res.status(200).json(data);
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
 const updateProperty = async (req, res) => {
     try {
-        // console.log(req.params.id);
-        // console.log(req.body);
         const images = req.files.map((file, index) => {
             return {
                 filename: file,
                 id: req.body.image_id[index]
             };
         });
-        console.log(images);
         await Hotel.updateOne({ _id: req.params.id }, {
             $set: {
                 name: req.body.name,
@@ -98,7 +87,6 @@ const updateProperty = async (req, res) => {
             const photo = await Hotel.findOne({ photos: { $elemMatch: { _id: image.id } } })
             for (const key of photo.photos) {
                 if (key._id == image.id) {
-                    console.log(key.image_id);
                     await cloudinary.uploader.destroy(key.image_id);
                 }
             }
@@ -119,7 +107,6 @@ const updateProperty = async (req, res) => {
 
         res.status(200).json("hotel updated")
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
@@ -133,7 +120,6 @@ const countByCity = async (req, res) => {
         res.status(200).json(list);
 
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
@@ -154,7 +140,6 @@ const countByType = async (req, res) => {
         ]);
 
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
@@ -165,7 +150,6 @@ const getAllHotels = async (req, res) => {
         res.status(200).json(hotels);
 
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
@@ -182,34 +166,12 @@ const getDestinations = async (req, res) => {
         }
         res.status(200).json(placesArr);
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
 
 const getHotelRooms = async (req, res) => {
     try {
-        // const hotel = await Hotel.findById(req.params.id);
-        // const list = await Promise.all(
-        //     hotel.rooms.map((room) => {
-        //         return Room.findById(room);
-        //     })
-        // );
-
-        // const startTimestamp = new Date(req.params.start).getTime();
-        // const endTimestamp = new Date(req.params.end).getTime();
-        // const availableRooms = [];
-
-        // for (let i = 0; i < list.length; i++) {
-        //     const room = list[i];
-        //     const unavailableDates = room.unavailableDates.map((date) => new Date(date).getTime());
-        //     const filteredDates = unavailableDates.filter((date) => {
-        //         return date >= startTimestamp && date < endTimestamp;
-        //     });
-        //     if (filteredDates.length === 0) {
-        //         availableRooms.push(room);
-        //     }
-        // }
         const hotel = await Hotel.findById(req.params.id);
         const list = await Promise.all(
             hotel.rooms.map((room) => {
@@ -233,11 +195,8 @@ const getHotelRooms = async (req, res) => {
                 }
             }
         }
-
-        // console.log(availableRooms);
         res.status(200).json(availableRooms);
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` })
     }
 }
@@ -248,7 +207,6 @@ const getBookingDetails = async (req, res) => {
         if (!booking) res.status(404).json({ message: 'data not found' })
         res.status(200).json(booking)
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
@@ -299,11 +257,9 @@ const userBookingDetail = async (req, res) => {
                 }
             }
         ])
-        // console.log(detail);
         if (!detail) res.status(404).json({ message: 'data not found' })
         res.status(200).json(detail)
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
@@ -351,7 +307,6 @@ const getAllBookings = async (req, res) => {
         ])
         const total = data.length;
         const list = data.slice(skip, skip + size);
-        //console.log(list);
         res.json({
             records: list,
             total,
@@ -359,7 +314,6 @@ const getAllBookings = async (req, res) => {
             size
         })
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
@@ -390,65 +344,11 @@ const rateHotel = async (req, res) => {
             };
             hotelData.ratings.push(ratingObj);
         }
-
         await hotelData.save();
         res.status(200).json('Rating added successfully');
     } catch (err) {
-        console.error('Error adding rating:', err);
         res.status(500).json({ message: `Error -> ${err}` });
     }
-    // new Promise((resolve, reject) => {
-    //     Hotel.findById(hotelId)
-    //         .then((hotelData) => {
-    //             User.findById(userId)
-    //                 .then((userData) => {
-    //                     if (!hotelData) {
-    //                         reject('Hotel not found');
-    //                     }
-    //                     if (!userData) {
-    //                         reject('User not found');
-    //                     }
-
-    //                     const existingRating = hotelData.ratings.find(
-    //                         (rating) => rating.user.toString() === userId
-    //                     );
-    //                     if (existingRating) {
-    //                         existingRating.rating = rating;
-    //                         existingRating.review = review;
-    //                     } else {
-    //                         const ratingObj = {
-    //                             user: userData._id,
-    //                             rating: rating,
-    //                             review,
-    //                         };
-    //                         hotelData.ratings.push(ratingObj);
-    //                     }
-
-    //                     hotelData
-    //                         .save()
-    //                         .then(() => {
-    //                             resolve('Rating added successfully');
-    //                         })
-    //                         .catch((err) => {
-    //                             reject(`Error saving hotel data -> ${err}`);
-    //                         });
-    //                 })
-    //                 .catch((err) => {
-    //                     reject(`Error finding user -> ${err}`);
-    //                 });
-    //         })
-    //         .catch((err) => {
-    //             reject(`Error finding hotel -> ${err}`);
-    //         });
-    // })
-    //     .then((result) => {
-    //         res.status(200).json(result);
-    //     })
-    //     .catch((err) => {
-    //         console.error('Error adding rating:', err);
-    //         res.status(500).json({ message: `Error -> ${err}` });
-    //     });
-
 }
 
 const cancelBooking = async (req, res) => {
@@ -460,7 +360,6 @@ const cancelBooking = async (req, res) => {
             let currentDate = new Date();
             let checkinDate = new Date(checkin);
             if (checkinDate < currentDate) {
-                console.log("The check-out date is earlier than today's date");
                 return res.status(200).json('booking expired')
             }
             await Book.findByIdAndUpdate(req.params.id, {
@@ -471,7 +370,6 @@ const cancelBooking = async (req, res) => {
         }
         res.status(200).json({ message: `booking #${booking._id} canceled` });
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
@@ -479,8 +377,6 @@ const cancelBooking = async (req, res) => {
 const getAllBookingsWRTDuration = async (req, res) => {
     try {
         const time = req.query.duration
-        console.log(time);
-        console.log(req.query.page, req.query.size, req.query.duration);
         const page = req.query.page ? parseInt(req.query.page) : 1;
         const size = req.query.size ? parseInt(req.query.size) : 10;
         const skip = (page - 1) * size;
@@ -524,7 +420,6 @@ const getAllBookingsWRTDuration = async (req, res) => {
                 ])
                 const total = data.length;
                 const list = data.slice(skip, skip + size);
-                //console.log(list);
                 return res.json({
                     records: list,
                     total,
@@ -584,7 +479,6 @@ const getAllBookingsWRTDuration = async (req, res) => {
                 ]);
                 const total = data.length;
                 const list = data.slice(skip, skip + size);
-                //console.log(list);
                 return res.json({
                     records: list,
                     total,
@@ -601,7 +495,6 @@ const getAllBookingsWRTDuration = async (req, res) => {
                 }
                 const checkinDate = new Date();
                 const weekNumber = getWeek(checkinDate);
-                // console.log("Week number:", weekNumber);
                 const data = await Book.aggregate([
                     {
                         '$lookup': {
@@ -652,7 +545,6 @@ const getAllBookingsWRTDuration = async (req, res) => {
                 ]);
                 const total = data.length;
                 const list = data.slice(skip, skip + size);
-                //console.log(list);
                 return res.json({
                     records: list,
                     total,
@@ -662,7 +554,6 @@ const getAllBookingsWRTDuration = async (req, res) => {
             }
         }
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
@@ -711,19 +602,10 @@ const topDestinations = async (req, res) => {
                 },
             },
         ])
-        // for (let i = 0; i < bookingData.length; i++) {
-        //     const booking = bookingData[i];
-        //     const city = booking.city[0].toLowerCase();
-        //     const cityImage = imageData.find((image) => image.city.toLowerCase() === city);
-        //     if (cityImage) {
-        //         booking.city.splice(1, 0, cityImage.url);
-        //     }
-        // }
         if (!bookingData) return res.status(500).json('Data  not found')
         const data = bookingData.slice(0, 3)
         res.status(200).json(data)
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
@@ -747,7 +629,6 @@ const getHotelRating = async (req, res) => {
         ])
         res.status(200).json(rating)
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
@@ -846,53 +727,12 @@ const getRatings = async (req, res) => {
                 }
             }
         }
-
-        // console.log(result);
         res.status(200).json(result)
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: `Error -> ${error.message}` });
     }
 }
 
-
-const updateRating = (req, res) => {
-    try {
-        const hotelId = 'hotel-id'; // Replace with the actual hotel ID
-
-        Hotel.findById(hotelId)
-            .then(hotel => {
-                // Check if the hotel document exists
-                if (!hotel) {
-                    throw new Error('Hotel not found');
-                }
-
-                // Find the index of the rating belonging to the user
-                const userRatingIndex = hotel.ratings.findIndex(rating => rating.user.equals(userId));
-
-                // Check if the user rating exists
-                if (userRatingIndex === -1) {
-                    throw new Error('User rating not found');
-                }
-
-                // Update the rating value
-                hotel.ratings[userRatingIndex].rating = rating;
-
-                // Save the updated hotel document
-                return hotel.save();
-            })
-            .then(updatedHotel => {
-                console.log('Rating updated successfully:', updatedHotel);
-            })
-            .catch(err => {
-                console.error('Error updating rating:', err);
-            });
-
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: `Error -> ${error.message}` });
-    }
-}
 
 module.exports = {
     createHotel,

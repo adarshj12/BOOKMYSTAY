@@ -1,5 +1,17 @@
 const express = require('express');
-const { countByCity, countByType, getProperty, getAllHotels, getDestinations, getHotelRooms, getBookingDetails, rateHotel, topDestinations, getRatings, getHotelRating } = require('../controllers/hotelController');
+const { 
+    countByCity, 
+    countByType, 
+    getProperty, 
+    getAllHotels, 
+    getDestinations, 
+    getHotelRooms, 
+    getBookingDetails, 
+    rateHotel, 
+    topDestinations, 
+    getRatings, 
+    getHotelRating 
+} = require('../controllers/hotelController');
 const { verifyUser } = require('../utils/verifyToken');
 const router = express.Router();
 

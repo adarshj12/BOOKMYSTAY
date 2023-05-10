@@ -26,12 +26,10 @@ const PieChart = ({payment}) => {
 
     })
 
+    
     useEffect(() => {
-        // Extract labels and series data from payment
         const labels = payment.map((payment) => payment._id);
         const series = payment.map((payment) => payment.count);
-    
-        // Update the state with the extracted data
         setData((prevState) => ({
           ...prevState,
           series,
@@ -40,11 +38,11 @@ const PieChart = ({payment}) => {
             labels,
           },
         }));
-      }, [data]);
+      }, [payment]);
 
     return (
         <Chart
-            options={data.options} series={data.series} type="pie" width={380}
+            options={data?.options} series={data?.series} type="pie" width={380}
         />
     )
 

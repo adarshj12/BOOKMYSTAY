@@ -1,9 +1,24 @@
 const express = require('express');
-const { register, login, checkVerification, getProperty, getClientBookings, getBookingsPagination, getData, changeBookingStatus, cancelledBookings, getClientDetail } = require('../controllers/clientController');
+const { 
+    register, 
+    login, 
+    checkVerification, 
+    getClientBookings, 
+    getBookingsPagination, 
+    getData, 
+    changeBookingStatus, 
+    cancelledBookings, 
+    getClientDetail 
+} = require('../controllers/clientController');
 const { verifyClient } = require('../utils/verifyToken');
-const { createHotel, getClientProperties, deleteProperty, updateProperty, userBookingDetail } = require('../controllers/hotelController');
+const { 
+    createHotel, 
+    getClientProperties, 
+    deleteProperty, 
+    updateProperty, 
+    userBookingDetail 
+} = require('../controllers/hotelController');
 const multer = require('../utils/multer');
-const { getMaxListeners } = require('../models/clientModel');
 const router = express.Router();
 
 
